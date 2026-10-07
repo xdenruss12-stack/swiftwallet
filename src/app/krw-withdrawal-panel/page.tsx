@@ -104,7 +104,7 @@ export default function KrwWithdrawalPanelPage() {
   if (isSuccess) {
     return (
       <AppLayout activeRoute="/krw-withdrawal-panel">
-        <div className="max-w-screen-2xl mx-auto px-4 py-6 lg:px-8 xl:px-10 2xl:px-16">
+        <div className="px-3 py-4 sm:px-4 sm:py-6 lg:px-8">
           <div className="max-w-md mx-auto text-center py-16 space-y-5 fade-in">
             <div className="w-20 h-20 rounded-full bg-accent/20 border-2 border-accent/40 flex items-center justify-center mx-auto">
               <CheckCircle2 size={40} className="text-accent" />
@@ -165,21 +165,21 @@ export default function KrwWithdrawalPanelPage() {
 
   return (
     <AppLayout activeRoute="/krw-withdrawal-panel">
-      <div className="max-w-screen-2xl mx-auto px-4 py-6 lg:px-8 xl:px-10 2xl:px-16">
-        <div className="max-w-2xl mx-auto space-y-6">
+      <div className="px-3 py-4 sm:px-4 sm:py-6 lg:px-8">
+        <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
           {/* Header */}
-          <div className="flex items-start justify-between flex-wrap gap-4">
+          <div className="flex items-start justify-between flex-wrap gap-3">
             <div>
-              <h1 className="text-2xl font-semibold text-foreground">KRW Withdrawal</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">Transfer Korean Won to Toss or traditional bank</p>
+              <h1 className="text-lg sm:text-2xl font-semibold text-foreground">KRW Withdrawal</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Transfer Korean Won to Toss or traditional bank</p>
             </div>
-            <div className="card-elevated p-4 rounded-xl flex items-center gap-3 min-w-[220px]">
-              <div className="w-10 h-10 rounded-xl bg-krw/20 border border-krw/30 flex items-center justify-center">
+            <div className="card-elevated p-3 sm:p-4 rounded-xl flex items-center gap-3 w-full sm:w-auto sm:min-w-[220px]">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-krw/20 border border-krw/30 flex items-center justify-center flex-shrink-0">
                 <WalletCards size={18} className="text-krw" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">KRW Balance</p>
-                <p className="text-lg font-bold font-tabular text-krw">{fmtCurrency(krwWallet.balance, 'KRW')}</p>
+                <p className="text-base sm:text-lg font-bold font-tabular text-krw">{fmtCurrency(krwWallet.balance, 'KRW')}</p>
                 {krwWallet.pendingOut > 0 && (
                   <p className="text-xs text-warning">-{fmtCurrency(krwWallet.pendingOut, 'KRW')} pending</p>
                 )}
@@ -192,15 +192,15 @@ export default function KrwWithdrawalPanelPage() {
 
           {/* Step 1: Amount + Bank */}
           {step === 1 && (
-            <form onSubmit={handleSubmit(onAmountSubmit)} className="space-y-5">
+            <form onSubmit={handleSubmit(onAmountSubmit)} className="space-y-4 sm:space-y-5">
               {/* Bank Account Selector */}
-              <div className="card-surface p-5">
-                <h2 className="text-sm font-semibold text-foreground mb-4">Destination Account</h2>
+              <div className="card-surface p-4 sm:p-5">
+                <h2 className="text-sm font-semibold text-foreground mb-3 sm:mb-4">Destination Account</h2>
                 <KrwBankTabs selectedAcctId={selectedAcct} onSelect={setSelectedAcct} />
               </div>
 
               {/* Amount Input */}
-              <div className="card-surface p-5 space-y-4">
+              <div className="card-surface p-4 sm:p-5 space-y-3 sm:space-y-4">
                 <h2 className="text-sm font-semibold text-foreground">Withdrawal Amount</h2>
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1.5">Amount (KRW)</label>
@@ -282,7 +282,7 @@ export default function KrwWithdrawalPanelPage() {
 
           {/* Step 2: OTP */}
           {step === 2 && (
-            <div className="card-surface p-6 space-y-6 fade-in">
+            <div className="card-surface p-4 sm:p-6 space-y-5 sm:space-y-6 fade-in">
               <div className="text-center">
                 <div className="w-14 h-14 rounded-full bg-krw/15 border border-krw/30 flex items-center justify-center mx-auto mb-4">
                   <Mail size={24} className="text-krw" />
@@ -300,11 +300,11 @@ export default function KrwWithdrawalPanelPage() {
               {selectedBank && selectedAcctData && (
                 <div className="flex items-center gap-3 p-3 card-elevated rounded-xl">
                   <BankLogo bank={selectedBank} size="md" />
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-foreground">{selectedBank.name}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">{selectedBank.name}</p>
                     <p className="text-xs text-muted-foreground font-mono">{selectedAcctData.accountNumber}</p>
                   </div>
-                  <p className="text-sm font-bold font-tabular text-krw">{fmtCurrency(amt, 'KRW')}</p>
+                  <p className="text-sm font-bold font-tabular text-krw flex-shrink-0">{fmtCurrency(amt, 'KRW')}</p>
                 </div>
               )}
 
@@ -327,7 +327,7 @@ export default function KrwWithdrawalPanelPage() {
                 )}
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-2 sm:gap-3">
                 <button
                   onClick={() => { setStep(1); setOtp(Array(6).fill('')); setOtpError(''); }}
                   className="flex-1 py-3 rounded-xl bg-secondary border border-border text-sm font-semibold text-muted-foreground hover:text-foreground transition-all"

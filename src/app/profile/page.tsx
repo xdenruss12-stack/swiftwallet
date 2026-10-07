@@ -103,19 +103,19 @@ export default function ProfilePage() {
 
   return (
     <AppLayout activeRoute="/profile">
-      <div className="max-w-4xl mx-auto px-4 py-6 lg:px-8 space-y-6">
+      <div className="max-w-4xl mx-auto px-3 py-4 sm:px-4 sm:py-6 lg:px-8 space-y-4 sm:space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-xl font-semibold text-foreground">My Profile</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Account details, KYC status, and settings</p>
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground">My Profile</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Account details, KYC status, and settings</p>
         </div>
 
         {/* Account Card */}
-        <div className="card-surface p-5">
-          <div className="flex items-start gap-4">
+        <div className="card-surface p-4 sm:p-5">
+          <div className="flex items-start gap-3 sm:gap-4">
             <div className="relative flex-shrink-0">
-              <div className="w-16 h-16 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center">
-                <span className="text-xl font-bold text-primary">MS</span>
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center">
+                <span className="text-lg sm:text-xl font-bold text-primary">MS</span>
               </div>
               <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-accent border-2 border-card flex items-center justify-center">
                 <CheckCircle2 size={10} className="text-white" />
@@ -123,24 +123,24 @@ export default function ProfilePage() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-lg font-bold text-foreground">Maria Santos</h2>
+                <h2 className="text-base sm:text-lg font-bold text-foreground">Maria Santos</h2>
                 <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-accent/15 text-accent border border-accent/25">
                   Verified
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground mt-0.5">Member since September 2024</p>
-              <div className="mt-3 grid grid-cols-3 gap-3">
-                <div className="text-center p-2.5 bg-secondary rounded-xl">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Member since September 2024</p>
+              <div className="mt-3 grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="text-center p-2 sm:p-2.5 bg-secondary rounded-xl">
                   <p className="text-xs text-muted-foreground mb-0.5">PHP</p>
-                  <p className="text-sm font-bold font-tabular text-php">{fmtCurrency(phpBalance.balance, 'PHP')}</p>
+                  <p className="text-xs sm:text-sm font-bold font-tabular text-php truncate">{fmtCurrency(phpBalance.balance, 'PHP')}</p>
                 </div>
-                <div className="text-center p-2.5 bg-secondary rounded-xl">
+                <div className="text-center p-2 sm:p-2.5 bg-secondary rounded-xl">
                   <p className="text-xs text-muted-foreground mb-0.5">KRW</p>
-                  <p className="text-sm font-bold font-tabular text-krw">{fmtCurrency(krwBalance.balance, 'KRW')}</p>
+                  <p className="text-xs sm:text-sm font-bold font-tabular text-krw truncate">{fmtCurrency(krwBalance.balance, 'KRW')}</p>
                 </div>
-                <div className="text-center p-2.5 bg-secondary rounded-xl">
+                <div className="text-center p-2 sm:p-2.5 bg-secondary rounded-xl">
                   <p className="text-xs text-muted-foreground mb-0.5">USDT</p>
-                  <p className="text-sm font-bold font-tabular text-usdt">${usdtBalance.balance.toFixed(2)}</p>
+                  <p className="text-xs sm:text-sm font-bold font-tabular text-usdt">${usdtBalance.balance.toFixed(2)}</p>
                 </div>
               </div>
             </div>
@@ -150,18 +150,18 @@ export default function ProfilePage() {
           </div>
 
           {/* Personal Info */}
-          <div className="mt-5 pt-4 border-t border-border grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="mt-4 sm:mt-5 pt-4 border-t border-border grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             {[
               { icon: <Mail size={14} />, label: 'Email', value: 'maria.s@swiftwallet.ph' },
               { icon: <Phone size={14} />, label: 'Phone', value: '+63 917 *** 4421' },
               { icon: <MapPin size={14} />, label: 'Country', value: 'Philippines / South Korea' },
               { icon: <Globe size={14} />, label: 'Account ID', value: 'SWF-2024-00182' },
             ].map((item) => (
-              <div key={item.label} className="flex items-center gap-3 p-3 bg-secondary rounded-xl">
+              <div key={item.label} className="flex items-center gap-3 p-2.5 sm:p-3 bg-secondary rounded-xl">
                 <span className="text-muted-foreground flex-shrink-0">{item.icon}</span>
                 <div className="min-w-0">
                   <p className="text-xs text-muted-foreground">{item.label}</p>
-                  <p className="text-sm font-medium text-foreground truncate">{item.value}</p>
+                  <p className="text-xs sm:text-sm font-medium text-foreground truncate">{item.value}</p>
                 </div>
               </div>
             ))}

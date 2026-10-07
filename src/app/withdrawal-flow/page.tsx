@@ -103,7 +103,7 @@ export default function WithdrawalFlowPage() {
     const amt = parseFloat(amountVal);
     return (
       <AppLayout activeRoute="/withdrawal-flow">
-        <div className="max-w-screen-2xl mx-auto px-4 py-6 lg:px-8 xl:px-10 2xl:px-16">
+        <div className="px-3 py-4 sm:px-4 sm:py-6 lg:px-8">
           <div className="max-w-md mx-auto text-center py-16 space-y-5 fade-in">
             <div className="w-20 h-20 rounded-full bg-accent/20 border-2 border-accent/40 flex items-center justify-center mx-auto">
               <CheckCircle2 size={40} className="text-accent" />
@@ -149,23 +149,23 @@ export default function WithdrawalFlowPage() {
 
   return (
     <AppLayout activeRoute="/withdrawal-flow">
-      <div className="max-w-screen-2xl mx-auto px-4 py-6 lg:px-8 xl:px-10 2xl:px-16">
-        <div className="max-w-xl mx-auto space-y-6">
+      <div className="px-3 py-4 sm:px-4 sm:py-6 lg:px-8">
+        <div className="max-w-xl mx-auto space-y-4 sm:space-y-6">
           <div>
-            <h1 className="text-2xl font-semibold text-foreground">Withdraw Funds</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Transfer PHP or KRW to your linked bank account</p>
+            <h1 className="text-lg sm:text-2xl font-semibold text-foreground">Withdraw Funds</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Transfer PHP or KRW to your linked bank account</p>
           </div>
 
           <DepositStepIndicator currentStep={step} steps={STEPS} />
 
-          <div className="card-surface p-6 fade-in">
+          <div className="card-surface p-4 sm:p-6 fade-in">
             {/* Step 1 */}
             {step === 1 && (
-              <form onSubmit={handleSubmit(onAmountSubmit)} className="space-y-5">
+              <form onSubmit={handleSubmit(onAmountSubmit)} className="space-y-4 sm:space-y-5">
                 {/* Currency Toggle */}
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">Withdraw Currency</label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     {(['PHP', 'KRW'] as const).map((c) => (
                       <button
                         key={`wc-${c}`}
@@ -252,7 +252,7 @@ export default function WithdrawalFlowPage() {
 
             {/* Step 2: OTP */}
             {step === 2 && (
-              <div className="space-y-6">
+              <div className="space-y-5 sm:space-y-6">
                 <div className="text-center">
                   <div className="w-14 h-14 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center mx-auto mb-4">
                     <Mail size={24} className="text-primary" />
@@ -285,7 +285,7 @@ export default function WithdrawalFlowPage() {
                   )}
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex gap-2 sm:gap-3">
                   <button
                     onClick={() => { setStep(1); setOtp(Array(6).fill('')); setOtpError(''); }}
                     className="flex-1 py-3 rounded-xl bg-secondary border border-border text-sm font-semibold text-muted-foreground hover:text-foreground transition-all"

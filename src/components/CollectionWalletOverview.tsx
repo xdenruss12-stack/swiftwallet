@@ -22,7 +22,7 @@ export default function CollectionWalletOverview({ balances, isLoading = false }
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
       {balances.map((w) => {
         const c = CURRENCY_COLORS[w.currency];
         const netFlow = w.monthlyIn - w.monthlyOut;
@@ -31,7 +31,7 @@ export default function CollectionWalletOverview({ balances, isLoading = false }
         return (
           <div
             key={`wallet-${w.currency}`}
-            className={`card-surface p-5 border-2 ${c.ring} relative overflow-hidden`}
+            className={`card-surface p-4 sm:p-5 border-2 ${c.ring} relative overflow-hidden`}
           >
             {/* Subtle bg accent */}
             <div className={`absolute top-0 right-0 w-24 h-24 rounded-full opacity-5 ${c.dot}`}
@@ -53,7 +53,7 @@ export default function CollectionWalletOverview({ balances, isLoading = false }
             </div>
             <div className="mb-3">
               <p className="text-xs text-muted-foreground mb-1">Available Balance</p>
-              <p className={`balance-value text-foreground`}>
+              <p className={`balance-value text-foreground text-xl sm:text-2xl`}>
                 {fmtCurrency(w.balance, w.currency)}
               </p>
             </div>

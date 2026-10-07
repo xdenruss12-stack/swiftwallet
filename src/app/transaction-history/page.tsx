@@ -51,24 +51,24 @@ export default function TransactionHistoryPage() {
 
   return (
     <AppLayout activeRoute="/transaction-history">
-      <div className="max-w-4xl mx-auto px-4 py-6 lg:px-8 space-y-5">
+      <div className="max-w-4xl mx-auto px-3 py-4 sm:px-4 sm:py-6 lg:px-8 space-y-4 sm:space-y-5">
         {/* Header */}
         <div>
-          <h1 className="text-xl font-semibold text-foreground">Transaction History</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">All wallet activity across PHP, KRW, and USDT</p>
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Transaction History</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">All wallet activity across PHP, KRW, and USDT</p>
         </div>
 
         {/* Status Summary */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
           {[
             { label: 'Completed', count: completedCount, className: 'status-completed' },
             { label: 'Pending', count: pendingCount, className: 'status-pending' },
             { label: 'Processing', count: processingCount, className: 'status-processing' },
             { label: 'Failed', count: failedCount, className: 'status-failed' },
           ].map((s) => (
-            <div key={`summary-${s.label}`} className="card-surface p-3 flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">{s.label}</span>
-              <span className={`text-base font-bold font-tabular px-2 py-0.5 rounded-lg ${s.className}`}>{s.count}</span>
+            <div key={`summary-${s.label}`} className="card-surface p-2.5 sm:p-3 flex items-center justify-between">
+              <span className="text-xs sm:text-sm text-muted-foreground">{s.label}</span>
+              <span className={`text-sm sm:text-base font-bold font-tabular px-1.5 sm:px-2 py-0.5 rounded-lg ${s.className}`}>{s.count}</span>
             </div>
           ))}
         </div>
@@ -78,7 +78,7 @@ export default function TransactionHistoryPage() {
 
         {/* Error */}
         {error && (
-          <div className="card-surface px-5 py-4 text-sm text-danger">{error}</div>
+          <div className="card-surface px-4 sm:px-5 py-4 text-sm text-danger">{error}</div>
         )}
 
         {/* Table */}

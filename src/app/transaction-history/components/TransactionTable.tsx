@@ -59,7 +59,7 @@ export default function TransactionTable({ transactions }: TransactionTableProps
   return (
     <div className="card-surface">
       {/* Table Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+      <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-border">
         <div>
           <p className="text-sm font-semibold text-foreground">
             {total} transaction{total !== 1 ? 's' : ''}
@@ -70,14 +70,51 @@ export default function TransactionTable({ transactions }: TransactionTableProps
         </div>
         <button
           onClick={handleExport}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-muted-foreground bg-secondary border border-border rounded-lg hover:text-foreground hover:border-primary/50 transition-all"
+          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-xs font-medium text-muted-foreground bg-secondary border border-border rounded-lg hover:text-foreground hover:border-primary/50 transition-all"
         >
-          <Download size={13} /> Export CSV
+          <Download size={13} /> <span className="hidden sm:inline">Export CSV</span><span className="sm:hidden">Export</span>
         </button>
       </div>
 
-      {/* Scrollable Table */}
-      <div className="overflow-x-auto scrollbar-thin">
+      {/* Mobile Card List (visible on small screens) */}
+      <div className="sm:hidden divide-y divide-border">
+        {paginated.length === 0 ? (
+          <div className="px-4 py-12 text-center">
+            <div className="flex flex-col items-center gap-3 text-muted-foreground">
+              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center">
+                <Download size={20} className="text-muted-foreground" />
+              </div>
+              <p className="text-sm font-medium">No transactions match your filters</p>
+            </div>
+          </div>
+        ) : (
+          paginated.map((tx) => (
+            <div
+              key={`tx-card-${tx.id}`}
+              onClick={() => router.push(`/transaction-history/${tx.id}`)}
+              className="flex items-center gap-3 px-4 py-3.5 hover:bg-secondary/30 transition-colors cursor-pointer"
+            >
+              <TxTypeIcon type={tx.type} direction={tx.direction} />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">{tx.description}</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <CurrencyBadge currency={tx.currency} />
+                  <StatusBadge status={tx.status} size="sm" />
+                  <span className="text-xs text-muted-foreground">{tx.date}</span>
+                </div>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <p className={`text-sm font-semibold font-tabular ${tx.direction === 'in' ? 'text-accent' : 'text-danger'}`}>
+                  {tx.direction === 'in' ? '+' : '-'}{fmtCurrency(tx.amount, tx.currency)}
+                </p>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop Scrollable Table (hidden on small screens) */}
+      <div className="hidden sm:block overflow-x-auto scrollbar-thin">
         <table className="w-full min-w-[700px]">
           <thead>
             <tr className="border-b border-border bg-secondary/40">
@@ -165,9 +202,9 @@ export default function TransactionTable({ transactions }: TransactionTableProps
 
       {/* Pagination */}
       {total > 0 && (
-        <div className="flex items-center justify-between px-5 py-3 border-t border-border">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-t border-border flex-wrap gap-2">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>Rows per page:</span>
+            <span className="hidden sm:inline">Rows per page:</span>
             <select
               value={perPage}
               onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1); }}

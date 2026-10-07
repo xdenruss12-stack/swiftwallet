@@ -94,35 +94,35 @@ export default function DepositWizardPage() {
 
   return (
     <AppLayout activeRoute="/deposit-wizard">
-      <div className="max-w-2xl mx-auto px-4 py-6 lg:px-8 space-y-6">
+      <div className="max-w-2xl mx-auto px-3 py-4 sm:px-4 sm:py-6 lg:px-8 space-y-4 sm:space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-xl font-semibold text-foreground">Deposit Funds</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Add money via bank transfer</p>
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Deposit Funds</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Add money via bank transfer</p>
         </div>
 
         {/* Step Indicator */}
         <DepositStepIndicator currentStep={step} steps={STEPS} />
 
         {/* Step Content */}
-        <div className="card-surface p-5 fade-in">
+        <div className="card-surface p-4 sm:p-5 fade-in">
           {/* Step 1: Currency + Bank */}
           {step === 1 && (
-            <div className="space-y-5">
+            <div className="space-y-4 sm:space-y-5">
               <div>
-                <h2 className="text-base font-semibold text-foreground mb-1">Select Currency</h2>
-                <p className="text-xs text-muted-foreground mb-4">Choose which wallet to deposit into</p>
-                <div className="grid grid-cols-2 gap-3">
+                <h2 className="text-sm sm:text-base font-semibold text-foreground mb-1">Select Currency</h2>
+                <p className="text-xs text-muted-foreground mb-3 sm:mb-4">Choose which wallet to deposit into</p>
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   {(['PHP', 'KRW'] as CurrencyCode[]).map((c) => (
                     <button
                       key={`curr-${c}`}
                       onClick={() => { setCurrency(c); setSelectedBank(null); }}
-                      className={`p-4 rounded-xl border-2 text-left transition-all duration-150 ${
+                      className={`p-3 sm:p-4 rounded-xl border-2 text-left transition-all duration-150 ${
                         currency === c
                           ? c === 'PHP' ? 'border-php/60 bg-php/10' : 'border-krw/60 bg-krw/10' :'border-border bg-secondary hover:border-border/80'
                       }`}
                     >
-                      <p className={`text-lg font-bold ${c === 'PHP' ? 'text-php' : 'text-krw'}`}>{c === 'PHP' ? '₱' : '₩'}</p>
+                      <p className={`text-base sm:text-lg font-bold ${c === 'PHP' ? 'text-php' : 'text-krw'}`}>{c === 'PHP' ? '₱' : '₩'}</p>
                       <p className="text-sm font-semibold text-foreground">{c}</p>
                       <p className="text-xs text-muted-foreground">{c === 'PHP' ? 'Philippine Peso' : 'Korean Won'}</p>
                     </button>
@@ -131,7 +131,7 @@ export default function DepositWizardPage() {
               </div>
 
               <div>
-                <h2 className="text-base font-semibold text-foreground mb-1">Select Bank</h2>
+                <h2 className="text-sm sm:text-base font-semibold text-foreground mb-1">Select Bank</h2>
                 <p className="text-xs text-muted-foreground mb-3">
                   {currency === 'KRW' ? 'Korean banks available for KRW transfer' : 'Philippine banks and e-wallets'}
                 </p>
@@ -155,9 +155,9 @@ export default function DepositWizardPage() {
 
           {/* Step 2: Amount */}
           {step === 2 && (
-            <form onSubmit={handleSubmit(onAmountSubmit)} className="space-y-5">
+            <form onSubmit={handleSubmit(onAmountSubmit)} className="space-y-4 sm:space-y-5">
               <div>
-                <h2 className="text-base font-semibold text-foreground mb-1">Enter Deposit Amount</h2>
+                <h2 className="text-sm sm:text-base font-semibold text-foreground mb-1">Enter Deposit Amount</h2>
                 <p className="text-xs text-muted-foreground">
                   Minimum: {currency === 'KRW' ? '₩10,000' : '₱100'} · Maximum: {currency === 'KRW' ? '₩10,000,000' : '₱500,000'}
                 </p>
@@ -210,7 +210,7 @@ export default function DepositWizardPage() {
                 </div>
               )}
 
-              <div className="flex gap-3">
+              <div className="flex gap-2 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setStep(1)}
@@ -232,7 +232,7 @@ export default function DepositWizardPage() {
           {step === 3 && (
             <div className="space-y-4">
               <div>
-                <h2 className="text-base font-semibold text-foreground mb-1">Transfer Instructions</h2>
+                <h2 className="text-sm sm:text-base font-semibold text-foreground mb-1">Transfer Instructions</h2>
                 <p className="text-xs text-muted-foreground">Send to the account below and include the reference code</p>
               </div>
               <DepositConfirmation

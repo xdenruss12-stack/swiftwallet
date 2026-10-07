@@ -20,20 +20,20 @@ export default function WalletOverviewPage() {
 
   return (
     <AppLayout activeRoute="/">
-      <div className="max-w-screen-2xl mx-auto px-4 py-6 lg:px-8 xl:px-10 2xl:px-16 space-y-6">
+      <div className="max-w-screen-2xl mx-auto px-3 py-4 sm:px-4 sm:py-6 lg:px-8 xl:px-10 2xl:px-16 space-y-4 sm:space-y-6">
         {/* Page Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Wallet Overview</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Last updated: Oct 06, 2026 at 21:11 UTC</p>
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <h1 className="text-lg sm:text-2xl font-semibold text-foreground truncate">Wallet Overview</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Last updated: Oct 06, 2026 at 21:11 UTC</p>
           </div>
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-secondary border border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-150 disabled:opacity-60"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-secondary border border-border text-xs sm:text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-150 disabled:opacity-60 flex-shrink-0"
           >
-            <RefreshCw size={14} className={isRefreshing ? 'animate-spin' : ''} />
-            Refresh
+            <RefreshCw size={13} className={isRefreshing ? 'animate-spin' : ''} />
+            <span className="hidden xs:inline">Refresh</span>
           </button>
         </div>
 
@@ -44,13 +44,13 @@ export default function WalletOverviewPage() {
         <CollectionWalletOverview balances={balances} isLoading={isLoading} />
 
         {/* Quick Actions */}
-        <div className="card-surface p-4">
+        <div className="card-surface p-3 sm:p-4">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3">Quick Actions</p>
           <QuickActions />
         </div>
 
         {/* Flow Chart + Recent Transactions */}
-        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-4 sm:gap-6">
           <div className="xl:col-span-3">
             <WalletFlowChartWrapper />
           </div>
