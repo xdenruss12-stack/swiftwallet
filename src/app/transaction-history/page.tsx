@@ -1,10 +1,10 @@
 'use client';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import AppLayout from '@/components/AppLayout';
 import TransactionFilters from './components/TransactionFilters';
 import TransactionTable from './components/TransactionTable';
-import { transactionService } from '@/lib/services/transactionService';
-import type { Transaction, TxType, TxStatus } from '@/lib/mockData';
+import { useRealtimeTransactions } from '@/hooks/useRealtimeTransactions';
+import type { TxType, TxStatus } from '@/lib/mockData';
 import type { CurrencyCode } from '@/lib/currency';
 import { TransactionTableSkeleton } from '@/components/ui/LoadingSkeleton';
 
@@ -28,25 +28,7 @@ const DEFAULT_FILTERS: FilterState = {
 
 export default function TransactionHistoryPage() {
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
-  const [isLoading, setIsLoading] = useState(true);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      try {
-        const data = await transactionService.getAll();
-        if (!cancelled) setTransactions(data);
-      } catch (err: any) {
-        if (!cancelled) setError(err.message ?? 'Failed to load transactions');
-      } finally {
-        if (!cancelled) setIsLoading(false);
-      }
-    }
-    load();
-    return () => { cancelled = true; };
-  }, []);
+  const { transactions, isLoading, error } = useRealtimeTransactions();
 
   const filtered = useMemo(() => {
     return transactions.filter((tx) => {

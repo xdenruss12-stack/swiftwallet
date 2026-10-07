@@ -1,30 +1,21 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import AppLayout from '@/components/AppLayout';
 import CollectionWalletOverview from '@/components/CollectionWalletOverview';
 import ExchangeRateStrip from './components/ExchangeRateStrip';
 import RecentTransactions from './components/RecentTransactions';
 import QuickActions from './components/QuickActions';
 import WalletFlowChartWrapper from './components/WalletFlowChartWrapper';
-import { WALLET_BALANCES } from '@/lib/mockData';
+import { useRealtimeBalances } from '@/hooks/useRealtimeBalances';
 import { RefreshCw } from 'lucide-react';
 
 export default function WalletOverviewPage() {
-  const [isLoading, setIsLoading] = useState(true);
+  const { balances, isLoading } = useRealtimeBalances();
   const [isRefreshing, setIsRefreshing] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(t);
-  }, []);
 
   function handleRefresh() {
     setIsRefreshing(true);
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }, 800);
+    setTimeout(() => setIsRefreshing(false), 800);
   }
 
   return (
@@ -50,7 +41,7 @@ export default function WalletOverviewPage() {
         <ExchangeRateStrip />
 
         {/* Currency Balance Cards */}
-        <CollectionWalletOverview balances={WALLET_BALANCES} isLoading={isLoading} />
+        <CollectionWalletOverview balances={balances} isLoading={isLoading} />
 
         {/* Quick Actions */}
         <div className="card-surface p-4">

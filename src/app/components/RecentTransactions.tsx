@@ -1,8 +1,7 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { transactionService } from '@/lib/services/transactionService';
-import type { Transaction } from '@/lib/mockData';
+import { useRealtimeTransactions } from '@/hooks/useRealtimeTransactions';
 import { fmtCurrency } from '@/lib/currency';
 import TxTypeIcon from '@/components/ui/TxTypeIcon';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -11,25 +10,7 @@ import { ChevronRight } from 'lucide-react';
 import { RecentTransactionsSkeleton } from '@/components/ui/LoadingSkeleton';
 
 export default function RecentTransactions() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [recent, setRecent] = useState<Transaction[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      try {
-        const data = await transactionService.getRecent(5);
-        if (!cancelled) setRecent(data);
-      } catch (err: any) {
-        if (!cancelled) setError(err.message ?? 'Failed to load transactions');
-      } finally {
-        if (!cancelled) setIsLoading(false);
-      }
-    }
-    load();
-    return () => { cancelled = true; };
-  }, []);
+  const { transactions: recent, isLoading, error } = useRealtimeTransactions({ limit: 5 });
 
   if (isLoading) {
     return <RecentTransactionsSkeleton />;
@@ -45,7 +26,7 @@ export default function RecentTransactions() {
       </div>
       {error ? (
         <div className="px-5 py-8 text-center text-sm text-muted-foreground">{error}</div>
-      ) : recent.length === 0 ? (
+      ) : recent?.length === 0 ? (
         <div className="px-5 py-8 text-center text-sm text-muted-foreground">No recent transactions</div>
       ) : (
         <div className="divide-y divide-border">

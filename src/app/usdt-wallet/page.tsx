@@ -4,12 +4,13 @@ import AppLayout from '@/components/AppLayout';
 import UsdtWalletOverview from '@/components/UsdtWalletOverview';
 import UsdtActionTabs from './components/UsdtActionTabs';
 import UsdtTransactionList from './components/UsdtTransactionList';
-
-import { WALLET_BALANCES, USDT_WALLET_ADDRESS } from '@/lib/mockData';
+import { useRealtimeBalances } from '@/hooks/useRealtimeBalances';
+import { USDT_WALLET_ADDRESS } from '@/lib/mockData';
 import { EXCHANGE_RATES } from '@/lib/currency';
 
 export default function UsdtWalletPage() {
-  const usdtBalance = WALLET_BALANCES.find((b) => b.currency === 'USDT')!;
+  const { balances, isLoading } = useRealtimeBalances();
+  const usdtBalance = balances.find((b) => b.currency === 'USDT')!;
 
   return (
     <AppLayout activeRoute="/usdt-wallet">
@@ -25,7 +26,7 @@ export default function UsdtWalletPage() {
           {/* Left: Balance + Actions */}
           <div className="xl:col-span-2 space-y-4">
             <UsdtWalletOverview
-              balance={usdtBalance.balance}
+              balance={usdtBalance?.balance ?? 0}
               address={USDT_WALLET_ADDRESS}
               phpRate={EXCHANGE_RATES['USDT_PHP']}
               krwRate={EXCHANGE_RATES['USDT_KRW']}
@@ -35,11 +36,15 @@ export default function UsdtWalletPage() {
             <div className="card-surface p-4 grid grid-cols-2 gap-3">
               <div className="text-center p-3 bg-secondary rounded-xl">
                 <p className="text-xs text-muted-foreground mb-1">Monthly In</p>
-                <p className="text-lg font-bold font-tabular text-accent">${usdtBalance.monthlyIn.toFixed(2)}</p>
+                <p className="text-lg font-bold font-tabular text-accent">
+                  {isLoading ? '…' : `$${(usdtBalance?.monthlyIn ?? 0).toFixed(2)}`}
+                </p>
               </div>
               <div className="text-center p-3 bg-secondary rounded-xl">
                 <p className="text-xs text-muted-foreground mb-1">Monthly Out</p>
-                <p className="text-lg font-bold font-tabular text-danger">${usdtBalance.monthlyOut.toFixed(2)}</p>
+                <p className="text-lg font-bold font-tabular text-danger">
+                  {isLoading ? '…' : `$${(usdtBalance?.monthlyOut ?? 0).toFixed(2)}`}
+                </p>
               </div>
             </div>
           </div>
