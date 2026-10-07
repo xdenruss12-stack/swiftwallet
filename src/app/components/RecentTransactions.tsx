@@ -1,7 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { TRANSACTIONS } from '@/lib/mockData';
+import { transactionService } from '@/lib/services/transactionService';
+import type { Transaction } from '@/lib/mockData';
 import { fmtCurrency } from '@/lib/currency';
 import TxTypeIcon from '@/components/ui/TxTypeIcon';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -11,17 +12,28 @@ import { RecentTransactionsSkeleton } from '@/components/ui/LoadingSkeleton';
 
 export default function RecentTransactions() {
   const [isLoading, setIsLoading] = useState(true);
+  const [recent, setRecent] = useState<Transaction[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 900);
-    return () => clearTimeout(t);
+    let cancelled = false;
+    async function load() {
+      try {
+        const data = await transactionService.getRecent(5);
+        if (!cancelled) setRecent(data);
+      } catch (err: any) {
+        if (!cancelled) setError(err.message ?? 'Failed to load transactions');
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   if (isLoading) {
     return <RecentTransactionsSkeleton />;
   }
-
-  const recent = TRANSACTIONS?.slice(0, 5);
 
   return (
     <div className="card-surface">
@@ -31,26 +43,32 @@ export default function RecentTransactions() {
           View all <ChevronRight size={12} />
         </Link>
       </div>
-      <div className="divide-y divide-border">
-        {recent?.map((tx) => (
-          <div key={`recent-${tx?.id}`} className="flex items-center gap-3 px-5 py-3.5 hover:bg-secondary/30 transition-colors">
-            <TxTypeIcon type={tx?.type} direction={tx?.direction} />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">{tx?.description}</p>
-              <p className="text-xs text-muted-foreground">{tx?.date} · {tx?.reference}</p>
-            </div>
-            <div className="text-right flex-shrink-0">
-              <p className={`text-sm font-semibold font-tabular ${tx?.direction === 'in' ? 'text-accent' : 'text-danger'}`}>
-                {tx?.direction === 'in' ? '+' : '-'}{fmtCurrency(tx?.amount, tx?.currency)}
-              </p>
-              <div className="flex items-center gap-1.5 justify-end mt-1">
-                <CurrencyBadge currency={tx?.currency} />
-                <StatusBadge status={tx?.status} size="sm" />
+      {error ? (
+        <div className="px-5 py-8 text-center text-sm text-muted-foreground">{error}</div>
+      ) : recent.length === 0 ? (
+        <div className="px-5 py-8 text-center text-sm text-muted-foreground">No recent transactions</div>
+      ) : (
+        <div className="divide-y divide-border">
+          {recent?.map((tx) => (
+            <div key={`recent-${tx?.id}`} className="flex items-center gap-3 px-5 py-3.5 hover:bg-secondary/30 transition-colors">
+              <TxTypeIcon type={tx?.type} direction={tx?.direction} />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">{tx?.description}</p>
+                <p className="text-xs text-muted-foreground">{tx?.date} · {tx?.reference}</p>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <p className={`text-sm font-semibold font-tabular ${tx?.direction === 'in' ? 'text-accent' : 'text-danger'}`}>
+                  {tx?.direction === 'in' ? '+' : '-'}{fmtCurrency(tx?.amount, tx?.currency)}
+                </p>
+                <div className="flex items-center gap-1.5 justify-end mt-1">
+                  <CurrencyBadge currency={tx?.currency} />
+                  <StatusBadge status={tx?.status} size="sm" />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

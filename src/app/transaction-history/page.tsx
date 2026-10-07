@@ -3,8 +3,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import AppLayout from '@/components/AppLayout';
 import TransactionFilters from './components/TransactionFilters';
 import TransactionTable from './components/TransactionTable';
-import { TRANSACTIONS } from '@/lib/mockData';
-import type { TxType, TxStatus } from '@/lib/mockData';
+import { transactionService } from '@/lib/services/transactionService';
+import type { Transaction, TxType, TxStatus } from '@/lib/mockData';
 import type { CurrencyCode } from '@/lib/currency';
 import { TransactionTableSkeleton } from '@/components/ui/LoadingSkeleton';
 
@@ -29,14 +29,27 @@ const DEFAULT_FILTERS: FilterState = {
 export default function TransactionHistoryPage() {
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const [isLoading, setIsLoading] = useState(true);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 900);
-    return () => clearTimeout(t);
+    let cancelled = false;
+    async function load() {
+      try {
+        const data = await transactionService.getAll();
+        if (!cancelled) setTransactions(data);
+      } catch (err: any) {
+        if (!cancelled) setError(err.message ?? 'Failed to load transactions');
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   const filtered = useMemo(() => {
-    return TRANSACTIONS.filter((tx) => {
+    return transactions.filter((tx) => {
       if (filters.search) {
         const q = filters.search.toLowerCase();
         if (!tx.description.toLowerCase().includes(q) && !tx.reference.toLowerCase().includes(q)) return false;
@@ -46,13 +59,13 @@ export default function TransactionHistoryPage() {
       if (filters.status !== 'ALL' && tx.status !== filters.status) return false;
       return true;
     });
-  }, [filters]);
+  }, [filters, transactions]);
 
   // Summary stats
-  const completedCount = TRANSACTIONS.filter((t) => t.status === 'completed').length;
-  const pendingCount = TRANSACTIONS.filter((t) => t.status === 'pending').length;
-  const processingCount = TRANSACTIONS.filter((t) => t.status === 'processing').length;
-  const failedCount = TRANSACTIONS.filter((t) => t.status === 'failed').length;
+  const completedCount = transactions.filter((t) => t.status === 'completed').length;
+  const pendingCount = transactions.filter((t) => t.status === 'pending').length;
+  const processingCount = transactions.filter((t) => t.status === 'processing').length;
+  const failedCount = transactions.filter((t) => t.status === 'failed').length;
 
   return (
     <AppLayout activeRoute="/transaction-history">
@@ -80,6 +93,11 @@ export default function TransactionHistoryPage() {
 
         {/* Filters */}
         <TransactionFilters filters={filters} onChange={setFilters} />
+
+        {/* Error */}
+        {error && (
+          <div className="card-surface px-5 py-4 text-sm text-danger">{error}</div>
+        )}
 
         {/* Table */}
         {isLoading ? (
