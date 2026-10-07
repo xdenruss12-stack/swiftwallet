@@ -54,7 +54,7 @@ export default function TransactionHistoryPage() {
       <div className="max-w-4xl mx-auto px-3 py-4 sm:px-4 sm:py-6 lg:px-8 space-y-4 sm:space-y-5">
         {/* Header */}
         <div>
-          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Transaction History</h1>
+          <h1 className="text-base sm:text-xl font-semibold text-foreground">Transaction History</h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">All wallet activity across PHP, KRW, and USDT</p>
         </div>
 
@@ -66,9 +66,9 @@ export default function TransactionHistoryPage() {
             { label: 'Processing', count: processingCount, className: 'status-processing' },
             { label: 'Failed', count: failedCount, className: 'status-failed' },
           ].map((s) => (
-            <div key={`summary-${s.label}`} className="card-surface p-2.5 sm:p-3 flex items-center justify-between">
-              <span className="text-xs sm:text-sm text-muted-foreground">{s.label}</span>
-              <span className={`text-sm sm:text-base font-bold font-tabular px-1.5 sm:px-2 py-0.5 rounded-lg ${s.className}`}>{s.count}</span>
+            <div key={`summary-${s.label}`} className="card-surface p-3 flex items-center justify-between gap-2">
+              <span className="text-xs text-muted-foreground">{s.label}</span>
+              <span className={`text-sm font-bold font-tabular px-2 py-0.5 rounded-lg ${s.className}`}>{s.count}</span>
             </div>
           ))}
         </div>

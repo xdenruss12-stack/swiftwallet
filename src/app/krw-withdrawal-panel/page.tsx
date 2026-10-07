@@ -225,16 +225,16 @@ export default function KrwWithdrawalPanelPage() {
           {/* Header */}
           <div className="flex items-start justify-between flex-wrap gap-3">
             <div>
-              <h1 className="text-lg sm:text-2xl font-semibold text-foreground">KRW Withdrawal</h1>
+              <h1 className="text-base sm:text-2xl font-semibold text-foreground">KRW Withdrawal</h1>
               <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Transfer Korean Won to Toss or traditional bank</p>
             </div>
-            <div className="card-elevated p-3 sm:p-4 rounded-xl flex items-center gap-3 w-full sm:w-auto sm:min-w-[220px]">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-krw/20 border border-krw/30 flex items-center justify-center flex-shrink-0">
+            <div className="card-elevated p-3 rounded-xl flex items-center gap-3 w-full sm:w-auto sm:min-w-[220px]">
+              <div className="w-9 h-9 rounded-xl bg-krw/20 border border-krw/30 flex items-center justify-center flex-shrink-0">
                 <WalletCards size={18} className="text-krw" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">KRW Balance</p>
-                <p className="text-base sm:text-lg font-bold font-tabular text-krw">{fmtCurrency(krwWallet.balance, 'KRW')}</p>
+                <p className="text-base sm:text-lg font-bold font-tabular text-krw truncate">{fmtCurrency(krwWallet.balance, 'KRW')}</p>
                 {krwWallet.pendingOut > 0 && (
                   <p className="text-xs text-warning">-{fmtCurrency(krwWallet.pendingOut, 'KRW')} pending</p>
                 )}
@@ -257,7 +257,7 @@ export default function KrwWithdrawalPanelPage() {
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('bank')}
-                    className={`flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all duration-150 ${
+                    className={`flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all duration-150 min-h-[88px] ${
                       paymentMethod === 'bank' ?'border-primary bg-primary/10 text-primary' :'border-border bg-secondary text-muted-foreground hover:border-primary/40 hover:text-foreground'
                     }`}
                   >
@@ -275,7 +275,7 @@ export default function KrwWithdrawalPanelPage() {
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('stripe')}
-                    className={`flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all duration-150 ${
+                    className={`flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all duration-150 min-h-[88px] ${
                       paymentMethod === 'stripe' ?'border-primary bg-primary/10 text-primary' :'border-border bg-secondary text-muted-foreground hover:border-primary/40 hover:text-foreground'
                     }`}
                   >
@@ -334,8 +334,9 @@ export default function KrwWithdrawalPanelPage() {
                         },
                       })}
                       type="number"
+                      inputMode="numeric"
                       placeholder="0"
-                      className="w-full pl-8 pr-4 py-3 bg-secondary border border-border rounded-xl text-foreground font-tabular text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                      className="w-full pl-8 pr-4 py-3.5 bg-secondary border border-border rounded-xl text-foreground font-tabular text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                     />
                   </div>
                   {errors.amount && <p className="text-xs text-danger mt-1.5">{errors.amount.message}</p>}
@@ -351,7 +352,7 @@ export default function KrwWithdrawalPanelPage() {
                         const input = document.querySelector('input[type="number"]') as HTMLInputElement;
                         if (input) { input.value = String(preset); input.dispatchEvent(new Event('input', { bubbles: true })); }
                       }}
-                      className="px-3 py-1.5 text-xs font-medium bg-secondary border border-border rounded-lg text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all"
+                      className="px-3 py-2 text-xs font-medium bg-secondary border border-border rounded-lg text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all min-h-[36px]"
                     >
                       ₩{(preset / 1000).toFixed(0)}K
                     </button>
@@ -374,7 +375,7 @@ export default function KrwWithdrawalPanelPage() {
                 </div>
                 {paymentMethod === 'bank' && isToss && selectedBank && (
                   <div className="flex items-center gap-2 p-3 bg-primary/10 border border-primary/30 rounded-xl">
-                    <div className="w-5 h-5 rounded flex items-center justify-center text-[8px] font-bold"
+                    <div className="w-5 h-5 rounded flex items-center justify-center text-[8px] font-bold flex-shrink-0"
                       style={{ backgroundColor: selectedBank.color, color: selectedBank.textColor }}>
                       TB
                     </div>
@@ -385,7 +386,7 @@ export default function KrwWithdrawalPanelPage() {
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-krw text-white font-semibold text-sm hover:opacity-90 active:scale-95 transition-all duration-150"
+                className="w-full py-3.5 rounded-xl bg-krw text-white font-semibold text-sm hover:opacity-90 active:scale-95 transition-all duration-150 min-h-[48px]"
               >
                 {paymentMethod === 'stripe' ? 'Continue to Card Payment' : 'Request KRW Withdrawal'}
               </button>
@@ -431,7 +432,7 @@ export default function KrwWithdrawalPanelPage() {
 
               <div className="text-center text-xs text-muted-foreground">
                 {canResend ? (
-                  <button onClick={handleResendOtp} className="flex items-center gap-1.5 mx-auto text-primary hover:text-primary/80 transition-colors">
+                  <button onClick={handleResendOtp} className="flex items-center gap-1.5 mx-auto text-primary hover:text-primary/80 transition-colors py-2">
                     <RotateCcw size={12} /> Resend OTP
                   </button>
                 ) : (
@@ -442,14 +443,14 @@ export default function KrwWithdrawalPanelPage() {
               <div className="flex gap-2 sm:gap-3">
                 <button
                   onClick={() => { setStep(1); setOtp(Array(6).fill('')); setOtpError(''); }}
-                  className="flex-1 py-3 rounded-xl bg-secondary border border-border text-sm font-semibold text-muted-foreground hover:text-foreground transition-all"
+                  className="flex-1 py-3.5 rounded-xl bg-secondary border border-border text-sm font-semibold text-muted-foreground hover:text-foreground transition-all min-h-[48px]"
                 >
                   Back
                 </button>
                 <button
                   onClick={handleVerifyOtp}
                   disabled={isVerifying || otp.join('').length < 6}
-                  className="flex-1 py-3 rounded-xl bg-krw text-white font-semibold text-sm hover:opacity-90 active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 py-3.5 rounded-xl bg-krw text-white font-semibold text-sm hover:opacity-90 active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-h-[48px]"
                 >
                   {isVerifying ? (
                     <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Verifying...</>

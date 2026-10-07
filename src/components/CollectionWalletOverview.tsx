@@ -22,7 +22,7 @@ export default function CollectionWalletOverview({ balances, isLoading = false }
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+    <div className="grid grid-cols-1 xs:grid-cols-3 sm:grid-cols-3 gap-3 sm:gap-4">
       {balances.map((w) => {
         const c = CURRENCY_COLORS[w.currency];
         const netFlow = w.monthlyIn - w.monthlyOut;
@@ -31,7 +31,7 @@ export default function CollectionWalletOverview({ balances, isLoading = false }
         return (
           <div
             key={`wallet-${w.currency}`}
-            className={`card-surface p-4 sm:p-5 border-2 ${c.ring} relative overflow-hidden`}
+            className={`card-surface p-4 border-2 ${c.ring} relative overflow-hidden`}
           >
             {/* Subtle bg accent */}
             <div className={`absolute top-0 right-0 w-24 h-24 rounded-full opacity-5 ${c.dot}`}
@@ -53,7 +53,7 @@ export default function CollectionWalletOverview({ balances, isLoading = false }
             </div>
             <div className="mb-3">
               <p className="text-xs text-muted-foreground mb-1">Available Balance</p>
-              <p className={`balance-value text-foreground text-xl sm:text-2xl`}>
+              <p className="balance-value text-foreground text-lg sm:text-xl leading-tight break-all">
                 {fmtCurrency(w.balance, w.currency)}
               </p>
             </div>
@@ -71,15 +71,15 @@ export default function CollectionWalletOverview({ balances, isLoading = false }
                 )}
               </div>
             )}
-            <div className="flex items-center justify-between pt-3 border-t border-border">
-              <div className="text-xs text-muted-foreground">
+            <div className="flex items-center justify-between pt-3 border-t border-border gap-2">
+              <div className="text-xs text-muted-foreground min-w-0">
                 <span className="text-secondary-foreground">↑ {fmtCompact(w.monthlyIn, w.currency)}</span>
-                <span className="mx-1.5 text-border">|</span>
+                <span className="mx-1 text-border">|</span>
                 <span className="text-secondary-foreground">↓ {fmtCompact(w.monthlyOut, w.currency)}</span>
               </div>
-              <div className={`flex items-center gap-1 text-xs font-medium text-secondary-foreground`}>
+              <div className="flex items-center gap-1 text-xs font-medium text-secondary-foreground flex-shrink-0">
                 {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                {isPositive ? '+' : ''}{fmtCompact(Math.abs(netFlow), w.currency)}
+                <span className="truncate">{isPositive ? '+' : ''}{fmtCompact(Math.abs(netFlow), w.currency)}</span>
               </div>
             </div>
           </div>

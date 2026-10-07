@@ -47,14 +47,14 @@ function SettingRow({ icon, label, description, action, onClick }: SettingRowPro
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-4 px-4 py-3.5 hover:bg-secondary/60 transition-colors rounded-xl text-left"
+      className="w-full flex items-center gap-3 px-3 sm:px-4 py-3.5 hover:bg-secondary/60 transition-colors rounded-xl text-left min-h-[56px]"
     >
       <div className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0 text-muted-foreground">
         {icon}
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-foreground">{label}</p>
-        {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
+        {description && <p className="text-xs text-muted-foreground mt-0.5 truncate">{description}</p>}
       </div>
       {action ?? <ChevronRight size={16} className="text-muted-foreground flex-shrink-0" />}
     </button>
@@ -420,15 +420,15 @@ export default function ProfilePage() {
       <div className="max-w-4xl mx-auto px-3 py-4 sm:px-4 sm:py-6 lg:px-8 space-y-4 sm:space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-lg sm:text-xl font-semibold text-foreground">My Profile</h1>
+          <h1 className="text-base sm:text-xl font-semibold text-foreground">My Profile</h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Account details, KYC status, and settings</p>
         </div>
 
         {/* Success Banner */}
         {successMsg && (
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-accent/10 border border-accent/25 text-accent text-sm font-medium">
-            <CheckCircle2 size={16} />
-            {successMsg}
+            <CheckCircle2 size={16} className="flex-shrink-0" />
+            <span className="flex-1 min-w-0">{successMsg}</span>
           </div>
         )}
 
@@ -436,7 +436,7 @@ export default function ProfilePage() {
         <div className="card-surface p-4 sm:p-5">
           {profileLoading ? (
             <div className="flex items-center gap-4 animate-pulse">
-              <div className="w-16 h-16 rounded-2xl bg-secondary flex-shrink-0" />
+              <div className="w-14 h-14 rounded-2xl bg-secondary flex-shrink-0" />
               <div className="flex-1 space-y-2">
                 <div className="h-5 bg-secondary rounded w-40" />
                 <div className="h-3 bg-secondary rounded w-28" />
@@ -454,8 +454,8 @@ export default function ProfilePage() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h2 className="text-base sm:text-lg font-bold text-foreground">{displayName}</h2>
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-accent/15 text-accent border border-accent/25">
+                  <h2 className="text-base sm:text-lg font-bold text-foreground truncate">{displayName}</h2>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-accent/15 text-accent border border-accent/25 flex-shrink-0">
                     Verified
                   </span>
                 </div>
@@ -465,7 +465,7 @@ export default function ProfilePage() {
               </div>
               <button
                 onClick={openEditProfile}
-                className="flex-shrink-0 p-2 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-muted-foreground hover:text-foreground"
+                className="flex-shrink-0 p-2.5 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-muted-foreground hover:text-foreground min-w-[40px] min-h-[40px] flex items-center justify-center"
               >
                 <Edit2 size={16} />
               </button>
@@ -482,7 +482,7 @@ export default function ProfilePage() {
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-3 p-2.5 sm:p-3 bg-secondary rounded-xl">
                 <span className="text-muted-foreground flex-shrink-0">{item.icon}</span>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="text-xs text-muted-foreground">{item.label}</p>
                   <p className="text-xs sm:text-sm font-medium text-foreground truncate">{item.value}</p>
                 </div>
@@ -492,10 +492,10 @@ export default function ProfilePage() {
         </div>
 
         {/* KYC Status */}
-        <div className="card-surface p-5">
+        <div className="card-surface p-4 sm:p-5">
           <div className="flex items-center gap-2 mb-4">
             <Shield size={18} className="text-primary" />
-            <h3 className="text-base font-semibold text-foreground">KYC Verification</h3>
+            <h3 className="text-sm sm:text-base font-semibold text-foreground">KYC Verification</h3>
           </div>
           <div className="space-y-3">
             {KYC_TIERS.map((tier) => {
@@ -504,20 +504,20 @@ export default function ProfilePage() {
               return (
                 <div
                   key={tier.tier}
-                  className={`flex items-center gap-4 p-4 rounded-xl border transition-colors ${
+                  className={`flex items-center gap-3 p-3 sm:p-4 rounded-xl border transition-colors ${
                     isCompleted
                       ? 'bg-accent/5 border-accent/20'
                       : isPending
                       ? 'bg-warning/5 border-warning/20' :'bg-secondary border-border'
                   }`}
                 >
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0 ${
                     isCompleted ? 'bg-accent/15 text-accent' : isPending ? 'bg-warning/15 text-warning' : 'bg-secondary text-muted-foreground'
                   }`}>
-                    {isCompleted ? <CheckCircle2 size={18} /> : isPending ? <Clock size={18} /> : <AlertCircle size={18} />}
+                    {isCompleted ? <CheckCircle2 size={16} /> : isPending ? <Clock size={16} /> : <AlertCircle size={16} />}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{tier.tier}</span>
                       <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full ${
                         isCompleted ? 'bg-accent/15 text-accent' : isPending ? 'bg-warning/15 text-warning' : 'bg-secondary text-muted-foreground'
@@ -525,8 +525,13 @@ export default function ProfilePage() {
                         {isCompleted ? 'Completed' : isPending ? 'Pending' : 'Locked'}
                       </span>
                     </div>
-                    <p className="text-sm font-medium text-foreground mt-0.5">{tier.label}</p>
+                    <p className="text-xs sm:text-sm font-medium text-foreground mt-0.5">{tier.label}</p>
                     <p className="text-xs text-muted-foreground">{tier.description}</p>
+                    {/* Mobile: show limits inline */}
+                    <div className="flex gap-3 mt-1 sm:hidden">
+                      <span className="text-xs text-muted-foreground">↑ {fmtCurrency(tier.depositLimit, tier.currency as 'PHP')}</span>
+                      <span className="text-xs text-muted-foreground">↓ {fmtCurrency(tier.withdrawLimit, tier.currency as 'PHP')}</span>
+                    </div>
                   </div>
                   <div className="text-right flex-shrink-0 hidden sm:block">
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -539,7 +544,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   {isPending && (
-                    <button className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg bg-warning/15 text-warning border border-warning/25 hover:bg-warning/25 transition-colors">
+                    <button className="flex-shrink-0 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-warning/15 text-warning border border-warning/25 hover:bg-warning/25 transition-colors min-h-[32px]">
                       Verify
                     </button>
                   )}
@@ -550,10 +555,10 @@ export default function ProfilePage() {
         </div>
 
         {/* Transaction Limits */}
-        <div className="card-surface p-5">
-          <div className="flex items-center gap-2 mb-4">
+        <div className="card-surface p-4 sm:p-5">
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
             <CreditCard size={18} className="text-primary" />
-            <h3 className="text-base font-semibold text-foreground">Transaction Limits</h3>
+            <h3 className="text-sm sm:text-base font-semibold text-foreground">Transaction Limits</h3>
             <span className="ml-auto text-xs text-muted-foreground">Resets daily at 00:00 UTC</span>
           </div>
           <div className="space-y-4">
@@ -562,9 +567,9 @@ export default function ProfilePage() {
               const isHigh = pct > 80;
               return (
                 <div key={limit.label}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-sm text-foreground">{limit.label}</span>
-                    <span className="text-xs font-tabular text-muted-foreground">
+                  <div className="flex items-start justify-between mb-1.5 gap-2">
+                    <span className="text-xs sm:text-sm text-foreground">{limit.label}</span>
+                    <span className="text-xs font-tabular text-muted-foreground text-right flex-shrink-0">
                       {fmtCurrency(limit.used, limit.currency)} / {fmtCurrency(limit.max, limit.currency)}
                     </span>
                   </div>
@@ -582,10 +587,10 @@ export default function ProfilePage() {
         </div>
 
         {/* Linked Bank Accounts */}
-        <div className="card-surface p-5">
+        <div className="card-surface p-4 sm:p-5">
           <div className="flex items-center gap-2 mb-4">
             <CreditCard size={18} className="text-primary" />
-            <h3 className="text-base font-semibold text-foreground">Linked Bank Accounts</h3>
+            <h3 className="text-sm sm:text-base font-semibold text-foreground">Linked Bank Accounts</h3>
           </div>
           <div className="mb-4">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2 px-1">Philippine Peso (PHP)</p>
@@ -650,13 +655,13 @@ export default function ProfilePage() {
 
         {/* Account Settings */}
         <div className="card-surface overflow-hidden">
-          <div className="flex items-center gap-2 px-5 py-4 border-b border-border">
+          <div className="flex items-center gap-2 px-4 sm:px-5 py-4 border-b border-border">
             <User size={18} className="text-primary" />
-            <h3 className="text-base font-semibold text-foreground">Account Settings</h3>
+            <h3 className="text-sm sm:text-base font-semibold text-foreground">Account Settings</h3>
           </div>
 
           {/* Notifications */}
-          <div className="px-5 py-3 border-b border-border">
+          <div className="px-4 sm:px-5 py-3 border-b border-border">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">Notifications</p>
             <div className="space-y-1">
               {[
@@ -664,13 +669,13 @@ export default function ProfilePage() {
                 { label: 'SMS Notifications', desc: 'OTP & security alerts', value: notifSms, set: setNotifSms },
                 { label: 'Push Notifications', desc: 'Real-time app alerts', value: notifPush, set: setNotifPush },
               ].map((item) => (
-                <div key={item.label} className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-secondary/60 transition-colors">
+                <div key={item.label} className="flex items-center gap-3 px-3 sm:px-4 py-3 rounded-xl hover:bg-secondary/60 transition-colors min-h-[56px]">
                   <div className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0 text-muted-foreground">
                     <Bell size={16} />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground">{item.label}</p>
-                    <p className="text-xs text-muted-foreground">{item.desc}</p>
+                    <p className="text-xs text-muted-foreground truncate">{item.desc}</p>
                   </div>
                   <button
                     onClick={() => item.set(!item.value)}
@@ -690,7 +695,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Preferences */}
-          <div className="px-5 py-3 border-b border-border">
+          <div className="px-4 sm:px-5 py-3 border-b border-border">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">Preferences</p>
             <div className="space-y-1">
               <SettingRow
@@ -703,7 +708,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Security */}
-          <div className="px-5 py-3">
+          <div className="px-4 sm:px-5 py-3">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">Security</p>
             <div className="space-y-1">
               <SettingRow
@@ -743,17 +748,17 @@ export default function ProfilePage() {
         >
           {/* ── Change Password Modal ── */}
           {activeModal === 'password' && (
-            <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+            <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-border sticky top-0 bg-card z-10">
                 <div className="flex items-center gap-2">
                   <Lock size={18} className="text-primary" />
                   <h3 className="text-base font-semibold text-foreground">Change Password</h3>
                 </div>
-                <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground">
+                <button onClick={closeModal} className="p-2 rounded-lg hover:bg-secondary text-muted-foreground min-w-[36px] min-h-[36px] flex items-center justify-center">
                   <X size={18} />
                 </button>
               </div>
-              <div className="p-5 space-y-4">
+              <div className="p-4 sm:p-5 space-y-4">
                 {passwordError && (
                   <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-destructive/10 border border-destructive/25 text-destructive text-sm">
                     <AlertCircle size={14} />
@@ -834,17 +839,17 @@ export default function ProfilePage() {
 
           {/* ── Edit Profile Modal ── */}
           {activeModal === 'edit-profile' && (
-            <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+            <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-border sticky top-0 bg-card z-10">
                 <div className="flex items-center gap-2">
                   <User size={18} className="text-primary" />
                   <h3 className="text-base font-semibold text-foreground">Edit Profile</h3>
                 </div>
-                <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground">
+                <button onClick={closeModal} className="p-2 rounded-lg hover:bg-secondary text-muted-foreground min-w-[36px] min-h-[36px] flex items-center justify-center">
                   <X size={18} />
                 </button>
               </div>
-              <div className="p-5 space-y-4">
+              <div className="p-4 sm:p-5 space-y-4">
                 {editError && (
                   <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-destructive/10 border border-destructive/25 text-destructive text-sm">
                     <AlertCircle size={14} />
@@ -895,17 +900,17 @@ export default function ProfilePage() {
 
           {/* ── Preferences Modal ── */}
           {activeModal === 'preferences' && (
-            <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+            <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-border sticky top-0 bg-card z-10">
                 <div className="flex items-center gap-2">
                   <Globe size={18} className="text-primary" />
                   <h3 className="text-base font-semibold text-foreground">Currency & Language</h3>
                 </div>
-                <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground">
+                <button onClick={closeModal} className="p-2 rounded-lg hover:bg-secondary text-muted-foreground min-w-[36px] min-h-[36px] flex items-center justify-center">
                   <X size={18} />
                 </button>
               </div>
-              <div className="p-5 space-y-4">
+              <div className="p-4 sm:p-5 space-y-4">
                 {prefError && (
                   <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-destructive/10 border border-destructive/25 text-destructive text-sm">
                     <AlertCircle size={14} />
@@ -950,17 +955,17 @@ export default function ProfilePage() {
 
           {/* ── 2FA Setup Modal ── */}
           {activeModal === '2fa-setup' && (
-            <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+            <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-border sticky top-0 bg-card z-10">
                 <div className="flex items-center gap-2">
                   <Smartphone size={18} className="text-primary" />
                   <h3 className="text-base font-semibold text-foreground">Set Up 2FA</h3>
                 </div>
-                <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground">
+                <button onClick={closeModal} className="p-2 rounded-lg hover:bg-secondary text-muted-foreground min-w-[36px] min-h-[36px] flex items-center justify-center">
                   <X size={18} />
                 </button>
               </div>
-              <div className="p-5 space-y-4">
+              <div className="p-4 sm:p-5 space-y-4">
                 {totpError && (
                   <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-destructive/10 border border-destructive/25 text-destructive text-sm">
                     <AlertCircle size={14} />
@@ -1015,17 +1020,17 @@ export default function ProfilePage() {
 
           {/* ── 2FA Disable Modal ── */}
           {activeModal === '2fa-disable' && (
-            <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+            <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-border sticky top-0 bg-card z-10">
                 <div className="flex items-center gap-2">
                   <Shield size={18} className="text-warning" />
                   <h3 className="text-base font-semibold text-foreground">Disable 2FA</h3>
                 </div>
-                <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground">
+                <button onClick={closeModal} className="p-2 rounded-lg hover:bg-secondary text-muted-foreground min-w-[36px] min-h-[36px] flex items-center justify-center">
                   <X size={18} />
                 </button>
               </div>
-              <div className="p-5 space-y-4">
+              <div className="p-4 sm:p-5 space-y-4">
                 {totpError && (
                   <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-destructive/10 border border-destructive/25 text-destructive text-sm">
                     <AlertCircle size={14} />

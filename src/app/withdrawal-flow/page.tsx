@@ -152,7 +152,7 @@ export default function WithdrawalFlowPage() {
       <div className="px-3 py-4 sm:px-4 sm:py-6 lg:px-8">
         <div className="max-w-xl mx-auto space-y-4 sm:space-y-6">
           <div>
-            <h1 className="text-lg sm:text-2xl font-semibold text-foreground">Withdraw Funds</h1>
+            <h1 className="text-base sm:text-2xl font-semibold text-foreground">Withdraw Funds</h1>
             <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Transfer PHP or KRW to your linked bank account</p>
           </div>
 
@@ -171,12 +171,12 @@ export default function WithdrawalFlowPage() {
                         key={`wc-${c}`}
                         type="button"
                         onClick={() => { setCurrency(c); setSelectedAcct(null); }}
-                        className={`p-3 rounded-xl border-2 text-left transition-all ${
+                        className={`p-3 sm:p-4 rounded-xl border-2 text-left transition-all min-h-[72px] ${
                           currency === c
                             ? c === 'PHP' ? 'border-php/60 bg-php/10' : 'border-krw/60 bg-krw/10' :'border-border bg-secondary'
                         }`}
                       >
-                        <p className={`font-bold ${c === 'PHP' ? 'text-php' : 'text-krw'}`}>{c === 'PHP' ? '₱' : '₩'}</p>
+                        <p className={`font-bold text-lg ${c === 'PHP' ? 'text-php' : 'text-krw'}`}>{c === 'PHP' ? '₱' : '₩'}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">
                           Balance: <span className="font-semibold text-foreground">{fmtCurrency(WALLET_BALANCES.find(b => b.currency === c)!.balance, c)}</span>
                         </p>
@@ -210,8 +210,9 @@ export default function WithdrawalFlowPage() {
                         },
                       })}
                       type="number"
+                      inputMode="decimal"
                       placeholder="0.00"
-                      className="w-full pl-8 pr-4 py-3 bg-secondary border border-border rounded-xl text-foreground font-tabular text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                      className="w-full pl-8 pr-4 py-3.5 bg-secondary border border-border rounded-xl text-foreground font-tabular text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                     />
                   </div>
                   {errors.amount && <p className="text-xs text-danger mt-1.5">{errors.amount.message}</p>}
@@ -243,7 +244,7 @@ export default function WithdrawalFlowPage() {
 
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 active:scale-95 transition-all duration-150"
+                  className="w-full py-3.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 active:scale-95 transition-all duration-150 min-h-[48px]"
                 >
                   Request Withdrawal
                 </button>

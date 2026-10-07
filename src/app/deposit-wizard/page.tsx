@@ -309,7 +309,7 @@ export default function DepositWizardPage() {
       <div className="max-w-2xl mx-auto px-3 py-4 sm:px-4 sm:py-6 lg:px-8 space-y-4 sm:space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Deposit Funds</h1>
+          <h1 className="text-base sm:text-xl font-semibold text-foreground">Deposit Funds</h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Add money via Stripe secure payment</p>
         </div>
 
@@ -324,18 +324,18 @@ export default function DepositWizardPage() {
             <div className="space-y-4 sm:space-y-5">
               <div>
                 <h2 className="text-sm sm:text-base font-semibold text-foreground mb-1">Select Currency</h2>
-                <p className="text-xs text-muted-foreground mb-3 sm:mb-4">Choose which wallet to deposit into</p>
+                <p className="text-xs text-muted-foreground mb-3">Choose which wallet to deposit into</p>
                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   {(['PHP', 'KRW'] as CurrencyCode[]).map((c) => (
                     <button
                       key={`curr-${c}`}
                       onClick={() => { setCurrency(c); setSelectedBank(null); }}
-                      className={`p-3 sm:p-4 rounded-xl border-2 text-left transition-all duration-150 ${
+                      className={`p-3 sm:p-4 rounded-xl border-2 text-left transition-all duration-150 min-h-[80px] ${
                         currency === c
                           ? c === 'PHP' ? 'border-php/60 bg-php/10' : 'border-krw/60 bg-krw/10' :'border-border bg-secondary hover:border-border/80'
                       }`}
                     >
-                      <p className={`text-base sm:text-lg font-bold ${c === 'PHP' ? 'text-php' : 'text-krw'}`}>{c === 'PHP' ? '₱' : '₩'}</p>
+                      <p className={`text-lg sm:text-xl font-bold ${c === 'PHP' ? 'text-php' : 'text-krw'}`}>{c === 'PHP' ? '₱' : '₩'}</p>
                       <p className="text-sm font-semibold text-foreground">{c}</p>
                       <p className="text-xs text-muted-foreground">{c === 'PHP' ? 'Philippine Peso' : 'Korean Won'}</p>
                     </button>
@@ -359,7 +359,7 @@ export default function DepositWizardPage() {
 
               <button
                 onClick={handleNextStep1}
-                className="w-full py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 active:scale-95 transition-all duration-150"
+                className="w-full py-3.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 active:scale-95 transition-all duration-150 min-h-[48px]"
               >
                 Continue to Amount
               </button>
@@ -399,8 +399,9 @@ export default function DepositWizardPage() {
                       },
                     })}
                     type="number"
+                    inputMode="decimal"
                     placeholder="0.00"
-                    className="w-full pl-8 pr-4 py-3 bg-secondary border border-border rounded-xl text-foreground font-tabular text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                    className="w-full pl-8 pr-4 py-3.5 bg-secondary border border-border rounded-xl text-foreground font-tabular text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                   />
                 </div>
                 {errors.amount && <p className="text-xs text-danger mt-1.5">{errors.amount.message}</p>}
@@ -427,13 +428,13 @@ export default function DepositWizardPage() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="flex-1 py-3 rounded-xl bg-secondary border border-border text-sm font-semibold text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-150"
+                  className="flex-1 py-3.5 rounded-xl bg-secondary border border-border text-sm font-semibold text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-150 min-h-[48px]"
                 >
                   Back
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 active:scale-95 transition-all duration-150"
+                  className="flex-1 py-3.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 active:scale-95 transition-all duration-150 min-h-[48px]"
                 >
                   Continue to Payment
                 </button>
@@ -471,7 +472,7 @@ export default function DepositWizardPage() {
                       <label className="block text-xs font-medium text-foreground mb-1">First Name</label>
                       <input
                         {...registerBilling('firstName', { required: 'Required' })}
-                        className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                        className="w-full px-3 py-2.5 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                         placeholder="Juan"
                       />
                       {billingErrors.firstName && <p className="text-xs text-danger mt-0.5">{billingErrors.firstName.message}</p>}
@@ -480,7 +481,7 @@ export default function DepositWizardPage() {
                       <label className="block text-xs font-medium text-foreground mb-1">Last Name</label>
                       <input
                         {...registerBilling('lastName', { required: 'Required' })}
-                        className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                        className="w-full px-3 py-2.5 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                         placeholder="Dela Cruz"
                       />
                       {billingErrors.lastName && <p className="text-xs text-danger mt-0.5">{billingErrors.lastName.message}</p>}
@@ -492,7 +493,8 @@ export default function DepositWizardPage() {
                     <input
                       {...registerBilling('email', { required: 'Required' })}
                       type="email"
-                      className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                      inputMode="email"
+                      className="w-full px-3 py-2.5 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                       placeholder="juan@example.com"
                     />
                     {billingErrors.email && <p className="text-xs text-danger mt-0.5">{billingErrors.email.message}</p>}
@@ -502,7 +504,7 @@ export default function DepositWizardPage() {
                     <label className="block text-xs font-medium text-foreground mb-1">Address</label>
                     <input
                       {...registerBilling('addressLine1', { required: 'Required' })}
-                      className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                      className="w-full px-3 py-2.5 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                       placeholder="123 Main Street"
                     />
                     {billingErrors.addressLine1 && <p className="text-xs text-danger mt-0.5">{billingErrors.addressLine1.message}</p>}
@@ -513,7 +515,7 @@ export default function DepositWizardPage() {
                       <label className="block text-xs font-medium text-foreground mb-1">City</label>
                       <input
                         {...registerBilling('city', { required: 'Required' })}
-                        className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                        className="w-full px-3 py-2.5 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                         placeholder={currency === 'KRW' ? 'Seoul' : 'Manila'}
                       />
                       {billingErrors.city && <p className="text-xs text-danger mt-0.5">{billingErrors.city.message}</p>}
@@ -522,7 +524,7 @@ export default function DepositWizardPage() {
                       <label className="block text-xs font-medium text-foreground mb-1">State / Province</label>
                       <input
                         {...registerBilling('state', { required: 'Required' })}
-                        className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                        className="w-full px-3 py-2.5 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                         placeholder={currency === 'KRW' ? 'Seoul' : 'NCR'}
                       />
                       {billingErrors.state && <p className="text-xs text-danger mt-0.5">{billingErrors.state.message}</p>}
@@ -534,7 +536,8 @@ export default function DepositWizardPage() {
                       <label className="block text-xs font-medium text-foreground mb-1">Postal Code</label>
                       <input
                         {...registerBilling('postalCode', { required: 'Required' })}
-                        className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                        inputMode="numeric"
+                        className="w-full px-3 py-2.5 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                         placeholder={currency === 'KRW' ? '04524' : '1000'}
                       />
                       {billingErrors.postalCode && <p className="text-xs text-danger mt-0.5">{billingErrors.postalCode.message}</p>}
@@ -543,7 +546,7 @@ export default function DepositWizardPage() {
                       <label className="block text-xs font-medium text-foreground mb-1">Country</label>
                       <select
                         {...registerBilling('country', { required: 'Required' })}
-                        className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                        className="w-full px-3 py-2.5 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                       >
                         <option value="PH">Philippines (PH)</option>
                         <option value="KR">South Korea (KR)</option>
@@ -557,14 +560,14 @@ export default function DepositWizardPage() {
                     <button
                       type="button"
                       onClick={() => setStep(2)}
-                      className="flex-1 py-3 rounded-xl bg-secondary border border-border text-sm font-semibold text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-150"
+                      className="flex-1 py-3.5 rounded-xl bg-secondary border border-border text-sm font-semibold text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-150 min-h-[48px]"
                     >
                       Back
                     </button>
                     <button
                       type="submit"
                       disabled={isCreatingIntent}
-                      className="flex-1 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 py-3.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-h-[48px]"
                     >
                       {isCreatingIntent ? (
                         <>
@@ -619,7 +622,7 @@ export default function DepositWizardPage() {
                       setClientSecret(null);
                       setPaymentError(null);
                     }}
-                    className="w-full py-2.5 rounded-xl bg-transparent border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-150"
+                    className="w-full py-3 rounded-xl bg-transparent border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-150 min-h-[44px]"
                   >
                     Change Billing Details
                   </button>

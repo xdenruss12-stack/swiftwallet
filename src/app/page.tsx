@@ -24,16 +24,16 @@ export default function WalletOverviewPage() {
         {/* Page Header */}
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
-            <h1 className="text-lg sm:text-2xl font-semibold text-foreground truncate">Wallet Overview</h1>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Last updated: Oct 06, 2026 at 21:11 UTC</p>
+            <h1 className="text-base sm:text-2xl font-semibold text-foreground truncate">Wallet Overview</h1>
+            <p className="text-xs text-muted-foreground mt-0.5 truncate">Last updated: Oct 06, 2026 at 21:11 UTC</p>
           </div>
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-secondary border border-border text-xs sm:text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-150 disabled:opacity-60 flex-shrink-0"
+            className="flex items-center gap-1.5 px-2.5 py-2 rounded-xl bg-secondary border border-border text-xs text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-150 disabled:opacity-60 flex-shrink-0 min-h-[36px]"
           >
             <RefreshCw size={13} className={isRefreshing ? 'animate-spin' : ''} />
-            <span className="hidden xs:inline">Refresh</span>
+            <span className="hidden sm:inline">Refresh</span>
           </button>
         </div>
 

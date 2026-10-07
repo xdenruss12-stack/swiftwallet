@@ -63,9 +63,9 @@ export default function TransactionFilters({ filters, onChange }: TransactionFil
   return (
     <div className="space-y-3">
       {/* Search + Clear */}
-      <div className="flex gap-2 sm:gap-3">
-        <div className="relative flex-1">
-          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+      <div className="flex gap-2">
+        <div className="relative flex-1 min-w-0">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             value={filters.search}
@@ -74,7 +74,7 @@ export default function TransactionFilters({ filters, onChange }: TransactionFil
             className="w-full pl-9 pr-4 py-2.5 bg-secondary border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
           />
           {filters.search && (
-            <button onClick={() => update('search', '')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+            <button onClick={() => update('search', '')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1">
               <X size={14} />
             </button>
           )}
@@ -82,9 +82,9 @@ export default function TransactionFilters({ filters, onChange }: TransactionFil
         {hasActiveFilters && (
           <button
             onClick={clearAll}
-            className="px-3 py-2.5 text-xs font-medium text-danger border border-danger/30 bg-danger/10 rounded-xl hover:bg-danger/20 transition-all flex items-center gap-1.5 flex-shrink-0"
+            className="px-3 py-2.5 text-xs font-medium text-danger border border-danger/30 bg-danger/10 rounded-xl hover:bg-danger/20 transition-all flex items-center gap-1 flex-shrink-0 min-h-[44px]"
           >
-            <X size={12} /> Clear
+            <X size={12} /> <span className="hidden xs:inline">Clear</span>
           </button>
         )}
       </div>
@@ -92,12 +92,12 @@ export default function TransactionFilters({ filters, onChange }: TransactionFil
       {/* Filter Row */}
       <div className="space-y-2">
         {/* Dropdowns row */}
-        <div className="flex gap-2 flex-wrap">
+        <div className="grid grid-cols-2 gap-2">
           {/* Currency */}
           <select
             value={filters.currency}
             onChange={(e) => update('currency', e.target.value as CurrencyCode | 'ALL')}
-            className="flex-1 min-w-[120px] px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary transition-all"
+            className="w-full px-3 py-2.5 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary transition-all"
           >
             {CURRENCY_OPTIONS.map((o) => (
               <option key={`curr-opt-${o.value}`} value={o.value}>{o.label}</option>
@@ -108,7 +108,7 @@ export default function TransactionFilters({ filters, onChange }: TransactionFil
           <select
             value={filters.status}
             onChange={(e) => update('status', e.target.value as TxStatus | 'ALL')}
-            className="flex-1 min-w-[120px] px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary transition-all"
+            className="w-full px-3 py-2.5 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary transition-all"
           >
             {STATUS_OPTIONS.map((o) => (
               <option key={`status-opt-${o.value}`} value={o.value}>{o.label}</option>
@@ -117,18 +117,18 @@ export default function TransactionFilters({ filters, onChange }: TransactionFil
         </div>
 
         {/* Date Range */}
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <input
             type="date"
             value={filters.dateFrom}
             onChange={(e) => update('dateFrom', e.target.value)}
-            className="flex-1 px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary transition-all"
+            className="w-full px-3 py-2.5 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary transition-all"
           />
           <input
             type="date"
             value={filters.dateTo}
             onChange={(e) => update('dateTo', e.target.value)}
-            className="flex-1 px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary transition-all"
+            className="w-full px-3 py-2.5 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary transition-all"
           />
         </div>
 
@@ -138,7 +138,7 @@ export default function TransactionFilters({ filters, onChange }: TransactionFil
             <button
               key={`type-chip-${o.value}`}
               onClick={() => update('type', o.value)}
-              className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 min-h-[32px] ${
                 filters.type === o.value
                   ? 'bg-primary text-white' :'bg-secondary border border-border text-muted-foreground hover:text-foreground hover:border-primary/50'
               }`}
