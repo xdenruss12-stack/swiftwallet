@@ -1,14 +1,16 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import AppLayout from '@/components/AppLayout';
 import StatusBadge from '@/components/ui/StatusBadge';
 import TxTypeIcon from '@/components/ui/TxTypeIcon';
 import CurrencyBadge from '@/components/ui/CurrencyBadge';
-import { TRANSACTIONS, USER_BANK_ACCOUNTS } from '@/lib/mockData';
+import { transactionService } from '@/lib/services/transactionService';
+import type { Transaction } from '@/lib/mockData';
+import { USER_BANK_ACCOUNTS } from '@/lib/mockData';
 import { fmtCurrency } from '@/lib/currency';
 import { PAYMENT_CHANNEL_CONFIG } from '@/lib/paymentChannels';
-import { ArrowLeft, Calendar, Landmark, CreditCard,  } from 'lucide-react';
+import { ArrowLeft, Calendar, Landmark, CreditCard } from 'lucide-react';
 
 function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -22,10 +24,41 @@ function DetailRow({ label, children }: { label: string; children: React.ReactNo
 export default function TransactionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const [tx, setTx] = useState<Transaction | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  const tx = TRANSACTIONS.find((t) => t.id === id);
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    async function load() {
+      try {
+        const data = await transactionService.getById(id);
+        if (!cancelled) {
+          if (data) setTx(data);
+          else setNotFound(true);
+        }
+      } catch {
+        if (!cancelled) setNotFound(true);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, [id]);
 
-  if (!tx) {
+  if (isLoading) {
+    return (
+      <AppLayout activeRoute="/transaction-history">
+        <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+          <p className="text-muted-foreground text-sm">Loading transaction…</p>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (notFound || !tx) {
     return (
       <AppLayout activeRoute="/transaction-history">
         <div className="max-w-2xl mx-auto px-4 py-16 text-center">
@@ -44,7 +77,6 @@ export default function TransactionDetailPage() {
   const channelLabel =
     PAYMENT_CHANNEL_CONFIG[tx.channel as keyof typeof PAYMENT_CHANNEL_CONFIG]?.label ?? tx.channel;
 
-  // Find linked bank account by matching channel/currency
   const linkedAccount = USER_BANK_ACCOUNTS.find(
     (acct) => acct.currency === tx.currency && acct.isPrimary
   );
@@ -106,34 +138,28 @@ export default function TransactionDetailPage() {
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider pt-4 pb-2">
             Transaction Details
           </h2>
-
           <DetailRow label="Reference ID">
             <span className="font-mono text-xs bg-secondary px-2 py-0.5 rounded-lg">{tx.reference}</span>
           </DetailRow>
-
           <DetailRow label="Type">
             <span className="capitalize">{tx.type}</span>
           </DetailRow>
-
           <DetailRow label="Status">
             <div className="flex justify-end">
               <StatusBadge status={tx.status} />
             </div>
           </DetailRow>
-
           <DetailRow label="Timestamp">
             <div className="flex items-center justify-end gap-1.5">
               <Calendar size={13} className="text-muted-foreground" />
               <span className="font-tabular">{tx.date}</span>
             </div>
           </DetailRow>
-
           <DetailRow label="Currency">
             <div className="flex justify-end">
               <CurrencyBadge currency={tx.currency} />
             </div>
           </DetailRow>
-
           <DetailRow label="Direction">
             <span
               className={`capitalize font-medium ${
@@ -150,11 +176,9 @@ export default function TransactionDetailPage() {
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider pt-4 pb-2">
             Fee Breakdown
           </h2>
-
           <DetailRow label="Gross Amount">
             <span className="font-tabular">{fmtCurrency(tx.amount, tx.currency)}</span>
           </DetailRow>
-
           <DetailRow label="Transaction Fee">
             {tx.fee && tx.fee > 0 ? (
               <span className="font-tabular text-warning">{fmtCurrency(tx.fee, tx.currency)}</span>
@@ -162,7 +186,6 @@ export default function TransactionDetailPage() {
               <span className="text-accent text-xs font-medium">Free</span>
             )}
           </DetailRow>
-
           <DetailRow label="Net Amount">
             <span className="font-tabular font-semibold">
               {fmtCurrency(Math.abs(netAmount), tx.currency)}
@@ -175,14 +198,12 @@ export default function TransactionDetailPage() {
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider pt-4 pb-2">
             Payment Channel & Account
           </h2>
-
           <DetailRow label="Payment Channel">
             <div className="flex items-center justify-end gap-1.5">
               <CreditCard size={13} className="text-muted-foreground" />
               <span>{channelLabel}</span>
             </div>
           </DetailRow>
-
           {linkedAccount && (
             <>
               <DetailRow label="Linked Account">
@@ -196,7 +217,6 @@ export default function TransactionDetailPage() {
               </DetailRow>
             </>
           )}
-
           <DetailRow label="Description">
             <span className="text-muted-foreground">{tx.description}</span>
           </DetailRow>
