@@ -1,11 +1,14 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
+import { Elements } from '@stripe/react-stripe-js';
 import AppLayout from '@/components/AppLayout';
 import KrwBankTabs from './components/KrwBankTabs';
 import KrwFeeTable from './components/KrwFeeTable';
+import StripeWithdrawalForm from './components/StripeWithdrawalForm';
 import OtpInput from '../withdrawal-flow/components/OtpInput';
 import { WALLET_BALANCES, USER_BANK_ACCOUNTS } from '@/lib/mockData';
 import { fmtCurrency } from '@/lib/currency';
+import { getStripe } from '@/lib/stripe/client';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import {
@@ -15,13 +18,18 @@ import {
   RotateCcw,
   ExternalLink,
   WalletCards,
+  CreditCard,
+  Building2,
 } from 'lucide-react';
 import { getBankById } from '@/lib/banks';
 import BankLogo from '@/components/ui/BankLogo';
 import DepositStepIndicator from '../deposit-wizard/components/DepositStepIndicator';
 
-const STEPS = ['Amount & Account', 'OTP Verification'];
+const BANK_STEPS = ['Amount & Account', 'OTP Verification'];
+const STRIPE_STEPS = ['Amount & Account', 'Card Payment'];
 const OTP_TIMEOUT = 120;
+
+type PaymentMethod = 'bank' | 'stripe';
 
 interface KrwWithdrawForm {
   amount: string;
@@ -29,11 +37,13 @@ interface KrwWithdrawForm {
 
 export default function KrwWithdrawalPanelPage() {
   const [step, setStep] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('bank');
   const [selectedAcct, setSelectedAcct] = useState<string | null>(null);
   const [otp, setOtp] = useState(Array(6).fill(''));
   const [otpError, setOtpError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [stripePaymentIntentId, setStripePaymentIntentId] = useState<string | null>(null);
   const [otpTimer, setOtpTimer] = useState(OTP_TIMEOUT);
   const [canResend, setCanResend] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -42,8 +52,10 @@ export default function KrwWithdrawalPanelPage() {
   const amountVal = watch('amount');
   const krwWallet = WALLET_BALANCES.find((b) => b.currency === 'KRW')!;
 
+  const STEPS = paymentMethod === 'stripe' ? STRIPE_STEPS : BANK_STEPS;
+
   useEffect(() => {
-    if (step === 2) {
+    if (step === 2 && paymentMethod === 'bank') {
       setOtpTimer(OTP_TIMEOUT);
       setCanResend(false);
       timerRef.current = setInterval(() => {
@@ -54,15 +66,25 @@ export default function KrwWithdrawalPanelPage() {
       }, 1000);
     }
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [step]);
+  }, [step, paymentMethod]);
 
   function onAmountSubmit(data: KrwWithdrawForm) {
-    if (!selectedAcct) { toast.error('Select a destination bank account'); return; }
+    if (paymentMethod === 'bank' && !selectedAcct) {
+      toast.error('Select a destination bank account');
+      return;
+    }
     const amt = parseFloat(data.amount);
-    if (amt + 500 > krwWallet.balance) { toast.error('Insufficient KRW balance (including ₩500 fee)'); return; }
+    const fee = paymentMethod === 'stripe'
+      ? Math.round(amt * 0.029) + 350
+      : 500 + (amt > 1000000 ? 1000 : 0);
+    if (amt + fee > krwWallet.balance) {
+      toast.error(`Insufficient KRW balance (including ${paymentMethod === 'stripe' ? 'Stripe' : '₩500'} fee)`);
+      return;
+    }
     setStep(2);
-    // Backend integration: POST /api/wallet/krw-withdrawal/init → triggers OTP email
-    toast.info('OTP sent to m***@gmail.com');
+    if (paymentMethod === 'bank') {
+      toast.info('OTP sent to m***@gmail.com');
+    }
   }
 
   async function handleVerifyOtp() {
@@ -70,7 +92,6 @@ export default function KrwWithdrawalPanelPage() {
     if (code.length < 6) { setOtpError('Enter all 6 digits'); return; }
     setIsVerifying(true);
     setOtpError('');
-    // Backend integration: POST /api/wallet/krw-withdrawal/verify-otp
     await new Promise((r) => setTimeout(r, 2000));
     if (code === '123456') {
       setIsVerifying(false);
@@ -86,7 +107,6 @@ export default function KrwWithdrawalPanelPage() {
     setCanResend(false);
     setOtpTimer(OTP_TIMEOUT);
     setOtp(Array(6).fill(''));
-    // Backend integration: POST /api/wallet/krw-withdrawal/resend-otp
     toast.info('New OTP sent to your email');
     timerRef.current = setInterval(() => {
       setOtpTimer((prev) => {
@@ -96,10 +116,26 @@ export default function KrwWithdrawalPanelPage() {
     }, 1000);
   }
 
+  function handleStripeSuccess(paymentIntentId: string) {
+    setStripePaymentIntentId(paymentIntentId);
+    setIsSuccess(true);
+    toast.success('Card payment successful! KRW withdrawal is being processed.');
+  }
+
+  function handleReset() {
+    setStep(1);
+    setIsSuccess(false);
+    setOtp(Array(6).fill(''));
+    setSelectedAcct(null);
+    setStripePaymentIntentId(null);
+    setOtpError('');
+  }
+
   const selectedAcctData = USER_BANK_ACCOUNTS.find((a) => a.id === selectedAcct);
   const selectedBank = selectedAcctData ? getBankById(selectedAcctData.bankId, 'KRW') : null;
   const isToss = selectedAcctData?.bankId === 'toss';
   const amt = parseFloat(amountVal || '0');
+  const stripeFee = amt > 0 ? Math.round(amt * 0.029) + 350 : 0;
 
   if (isSuccess) {
     return (
@@ -111,10 +147,21 @@ export default function KrwWithdrawalPanelPage() {
             </div>
             <h2 className="text-xl font-bold text-foreground">KRW Withdrawal Approved</h2>
             <p className="text-sm text-muted-foreground">
-              <span className="text-foreground font-semibold">{fmtCurrency(amt, 'KRW')}</span> is being processed to your account.
+              <span className="text-foreground font-semibold">{fmtCurrency(amt, 'KRW')}</span> is being processed
+              {paymentMethod === 'stripe' ? ' via Stripe card payment' : ' to your account'}.
             </p>
 
-            {selectedBank && selectedAcctData && (
+            {paymentMethod === 'stripe' && stripePaymentIntentId && (
+              <div className="flex items-center gap-2 p-3 bg-primary/10 border border-primary/30 rounded-xl text-left">
+                <CreditCard size={16} className="text-primary flex-shrink-0" />
+                <div>
+                  <p className="text-xs font-semibold text-foreground">Stripe Payment Confirmed</p>
+                  <p className="text-xs text-muted-foreground font-mono truncate">{stripePaymentIntentId}</p>
+                </div>
+              </div>
+            )}
+
+            {paymentMethod === 'bank' && selectedBank && selectedAcctData && (
               <div className="flex items-center gap-3 p-3 card-elevated rounded-xl text-left">
                 <BankLogo bank={selectedBank} size="md" />
                 <div>
@@ -131,20 +178,28 @@ export default function KrwWithdrawalPanelPage() {
                 <span className="font-tabular text-foreground">{fmtCurrency(amt, 'KRW')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Transfer Fee</span>
-                <span className="font-tabular text-danger">-₩500</span>
+                <span className="text-muted-foreground">
+                  {paymentMethod === 'stripe' ? 'Stripe Fee (2.9% + ₩350)' : 'Transfer Fee'}
+                </span>
+                <span className="font-tabular text-danger">
+                  -{paymentMethod === 'stripe' ? fmtCurrency(stripeFee, 'KRW') : '₩500'}
+                </span>
               </div>
               <div className="flex justify-between border-t border-border pt-1 mt-1">
                 <span className="font-semibold text-foreground">Total Deducted</span>
-                <span className="font-tabular font-bold text-danger">{fmtCurrency(amt + 500, 'KRW')}</span>
+                <span className="font-tabular font-bold text-danger">
+                  {fmtCurrency(amt + (paymentMethod === 'stripe' ? stripeFee : 500), 'KRW')}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Processing Time</span>
-                <span className="text-foreground">Same day / Next business day</span>
+                <span className="text-foreground">
+                  {paymentMethod === 'stripe' ? '1–2 business days' : 'Same day / Next business day'}
+                </span>
               </div>
             </div>
 
-            {isToss && (
+            {paymentMethod === 'bank' && isToss && (
               <button className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-primary/40 bg-primary/10 text-primary text-sm font-semibold hover:bg-primary/20 transition-all">
                 <ExternalLink size={14} />
                 Open Toss to Track Transfer
@@ -152,7 +207,7 @@ export default function KrwWithdrawalPanelPage() {
             )}
 
             <button
-              onClick={() => { setStep(1); setIsSuccess(false); setOtp(Array(6).fill('')); setSelectedAcct(null); }}
+              onClick={handleReset}
               className="w-full py-3 rounded-xl bg-secondary border border-border text-sm font-semibold text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all"
             >
               Make Another Withdrawal
@@ -190,14 +245,68 @@ export default function KrwWithdrawalPanelPage() {
           {/* Step Indicator */}
           <DepositStepIndicator currentStep={step} steps={STEPS} />
 
-          {/* Step 1: Amount + Bank */}
+          {/* Step 1: Amount + Bank + Payment Method */}
           {step === 1 && (
             <form onSubmit={handleSubmit(onAmountSubmit)} className="space-y-4 sm:space-y-5">
-              {/* Bank Account Selector */}
+
+              {/* Payment Method Selector */}
               <div className="card-surface p-4 sm:p-5">
-                <h2 className="text-sm font-semibold text-foreground mb-3 sm:mb-4">Destination Account</h2>
-                <KrwBankTabs selectedAcctId={selectedAcct} onSelect={setSelectedAcct} />
+                <h2 className="text-sm font-semibold text-foreground mb-3">Payment Method</h2>
+                <div className="grid grid-cols-2 gap-2">
+                  {/* Bank Transfer */}
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('bank')}
+                    className={`flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all duration-150 ${
+                      paymentMethod === 'bank' ?'border-primary bg-primary/10 text-primary' :'border-border bg-secondary text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                    }`}
+                  >
+                    <Building2 size={20} />
+                    <div className="text-center">
+                      <p className="text-xs font-semibold">Bank Transfer</p>
+                      <p className="text-[10px] mt-0.5 opacity-75">₩500 flat fee</p>
+                    </div>
+                    {paymentMethod === 'bank' && (
+                      <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">Selected</span>
+                    )}
+                  </button>
+
+                  {/* Stripe Card */}
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('stripe')}
+                    className={`flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all duration-150 ${
+                      paymentMethod === 'stripe' ?'border-primary bg-primary/10 text-primary' :'border-border bg-secondary text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                    }`}
+                  >
+                    <CreditCard size={20} />
+                    <div className="text-center">
+                      <p className="text-xs font-semibold">Stripe Card</p>
+                      <p className="text-[10px] mt-0.5 opacity-75">2.9% + ₩350</p>
+                    </div>
+                    {paymentMethod === 'stripe' && (
+                      <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">Selected</span>
+                    )}
+                  </button>
+                </div>
+
+                {paymentMethod === 'stripe' && (
+                  <div className="mt-3 flex items-start gap-2 p-2.5 bg-primary/5 border border-primary/20 rounded-lg">
+                    <CreditCard size={12} className="text-primary flex-shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-primary/80">
+                      Stripe fees are charged directly to your card. No bank account required for this method.
+                    </p>
+                  </div>
+                )}
               </div>
+
+              {/* Bank Account Selector — only for bank transfer */}
+              {paymentMethod === 'bank' && (
+                <div className="card-surface p-4 sm:p-5">
+                  <h2 className="text-sm font-semibold text-foreground mb-3 sm:mb-4">Destination Account</h2>
+                  <KrwBankTabs selectedAcctId={selectedAcct} onSelect={setSelectedAcct} />
+                </div>
+              )}
 
               {/* Amount Input */}
               <div className="card-surface p-4 sm:p-5 space-y-3 sm:space-y-4">
@@ -217,7 +326,10 @@ export default function KrwWithdrawalPanelPage() {
                           if (isNaN(n) || n <= 0) return 'Enter a valid amount';
                           if (n < 10000) return 'Minimum withdrawal is ₩10,000';
                           if (n > 5000000) return 'Maximum withdrawal is ₩5,000,000';
-                          if (n + 500 > krwWallet.balance) return 'Insufficient balance (including ₩500 fee)';
+                          const fee = paymentMethod === 'stripe'
+                            ? Math.round(n * 0.029) + 350
+                            : 500 + (n > 1000000 ? 1000 : 0);
+                          if (n + fee > krwWallet.balance) return 'Insufficient balance (including fees)';
                           return true;
                         },
                       })}
@@ -248,7 +360,7 @@ export default function KrwWithdrawalPanelPage() {
 
                 {/* Fee Table */}
                 {amt > 0 && !isNaN(amt) && (
-                  <KrwFeeTable amount={amt} />
+                  <KrwFeeTable amount={amt} paymentMethod={paymentMethod} />
                 )}
               </div>
 
@@ -257,10 +369,10 @@ export default function KrwWithdrawalPanelPage() {
                 <div className="flex items-start gap-2 p-3 bg-warning/10 border border-warning/30 rounded-xl">
                   <AlertTriangle size={14} className="text-warning flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-warning">
-                    Withdrawals submitted after 15:00 KST will be processed the next business day. Korean public holidays may cause delays.
+                    {paymentMethod === 'stripe' ?'Stripe card charges are instant. KRW will be credited to your wallet and processed within 1–2 business days.' :'Withdrawals submitted after 15:00 KST will be processed the next business day. Korean public holidays may cause delays.'}
                   </p>
                 </div>
-                {isToss && selectedBank && (
+                {paymentMethod === 'bank' && isToss && selectedBank && (
                   <div className="flex items-center gap-2 p-3 bg-primary/10 border border-primary/30 rounded-xl">
                     <div className="w-5 h-5 rounded flex items-center justify-center text-[8px] font-bold"
                       style={{ backgroundColor: selectedBank.color, color: selectedBank.textColor }}>
@@ -275,13 +387,13 @@ export default function KrwWithdrawalPanelPage() {
                 type="submit"
                 className="w-full py-3 rounded-xl bg-krw text-white font-semibold text-sm hover:opacity-90 active:scale-95 transition-all duration-150"
               >
-                Request KRW Withdrawal
+                {paymentMethod === 'stripe' ? 'Continue to Card Payment' : 'Request KRW Withdrawal'}
               </button>
             </form>
           )}
 
-          {/* Step 2: OTP */}
-          {step === 2 && (
+          {/* Step 2: OTP (bank) */}
+          {step === 2 && paymentMethod === 'bank' && (
             <div className="card-surface p-4 sm:p-6 space-y-5 sm:space-y-6 fade-in">
               <div className="text-center">
                 <div className="w-14 h-14 rounded-full bg-krw/15 border border-krw/30 flex items-center justify-center mx-auto mb-4">
@@ -345,6 +457,18 @@ export default function KrwWithdrawalPanelPage() {
                 </button>
               </div>
             </div>
+          )}
+
+          {/* Step 2: Stripe Card Payment */}
+          {step === 2 && paymentMethod === 'stripe' && (
+            <Elements stripe={getStripe()}>
+              <StripeWithdrawalForm
+                amount={amt}
+                stripeFee={stripeFee}
+                onSuccess={handleStripeSuccess}
+                onBack={() => setStep(1)}
+              />
+            </Elements>
           )}
         </div>
       </div>
