@@ -107,7 +107,9 @@ export default function ProfilePage() {
         {/* Header */}
         <div>
           <h1 className="text-xl font-semibold text-foreground">My Profile</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Account details, KYC status, and settings</p>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Sample account details, KYC status, and settings
+          </p>
         </div>
 
         {/* Account Card */}

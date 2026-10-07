@@ -15,7 +15,7 @@ export default function WalletFlowChartWrapper() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-sm font-semibold text-foreground">Monthly Flow</h2>
-          <p className="text-xs text-muted-foreground">Inflow vs Outflow — last 6 months</p>
+          <p className="text-xs text-muted-foreground">Sample data · last 6 months</p>
         </div>
         <div className="flex gap-1 p-1 bg-secondary rounded-lg">
           {CURRENCIES.map((c) => (

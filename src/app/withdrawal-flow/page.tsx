@@ -156,6 +156,11 @@ export default function WithdrawalFlowPage() {
             <p className="text-sm text-muted-foreground mt-0.5">Transfer PHP or KRW to your linked bank account</p>
           </div>
 
+          <div className="flex items-start gap-2 rounded-xl border border-warning/30 bg-warning/10 p-3 text-xs text-warning">
+            <AlertTriangle size={14} className="mt-0.5 flex-shrink-0" />
+            <p>Demo only: withdrawals are not connected to Swiftpay and do not debit your wallet.</p>
+          </div>
+
           <DepositStepIndicator currentStep={step} steps={STEPS} />
 
           <div className="card-surface p-6 fade-in">

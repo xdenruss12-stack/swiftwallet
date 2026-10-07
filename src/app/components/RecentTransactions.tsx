@@ -26,7 +26,10 @@ export default function RecentTransactions() {
   return (
     <div className="card-surface">
       <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-        <h2 className="text-sm font-semibold text-foreground">Recent Activity</h2>
+        <div>
+          <h2 className="text-sm font-semibold text-foreground">Recent Activity</h2>
+          <p className="text-[10px] text-warning">Sample data</p>
+        </div>
         <Link href="/transaction-history" className="text-xs text-primary hover:text-primary/80 flex items-center gap-1 transition-colors">
           View all <ChevronRight size={12} />
         </Link>

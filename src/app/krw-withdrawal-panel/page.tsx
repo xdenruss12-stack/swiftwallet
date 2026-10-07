@@ -187,6 +187,11 @@ export default function KrwWithdrawalPanelPage() {
             </div>
           </div>
 
+          <div className="flex items-start gap-2 rounded-xl border border-warning/30 bg-warning/10 p-3 text-xs text-warning">
+            <AlertTriangle size={14} className="mt-0.5 flex-shrink-0" />
+            <p>Demo only: withdrawals are not connected to a live payment provider.</p>
+          </div>
+
           {/* Step Indicator */}
           <DepositStepIndicator currentStep={step} steps={STEPS} />
 

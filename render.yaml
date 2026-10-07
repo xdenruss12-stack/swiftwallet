@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: swiftwallet
+    runtime: node
+    plan: starter
+    region: singapore
+    buildCommand: npm install --no-package-lock --no-audit --no-fund && npm run build
+    preDeployCommand: npm run db:migrate
+    startCommand: npm run start
+    healthCheckPath: /login
+    autoDeploy: true
+    envVars:
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_DB_URL
+        sync: false
+      - key: SWIFTPAY_ACCESS_KEY
+        sync: false
+      - key: SWIFTPAY_SECRET_KEY
+        sync: false
+      - key: SWIFTPAY_ENVIRONMENT
+        value: sandbox
+      - key: SWIFTPAY_WEBHOOK_URL
+        value: https://swiftwallet.onrender.com/api/swiftpay/webhook
+      - key: NEXT_PUBLIC_SITE_URL
+        value: https://swiftwallet.onrender.com
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"

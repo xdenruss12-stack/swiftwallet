@@ -8,6 +8,7 @@ import { WalletGridSkeleton } from '@/components/ui/LoadingSkeleton';
 interface CollectionWalletOverviewProps {
   balances: WalletBalance[];
   isLoading?: boolean;
+  demoCurrencies?: string[];
 }
 
 const CURRENCY_COLORS: Record<string, { ring: string; dot: string; label: string }> = {
@@ -16,7 +17,11 @@ const CURRENCY_COLORS: Record<string, { ring: string; dot: string; label: string
   USDT: { ring: 'border-border', dot: 'bg-muted-foreground', label: 'text-muted-foreground' },
 };
 
-export default function CollectionWalletOverview({ balances, isLoading = false }: CollectionWalletOverviewProps) {
+export default function CollectionWalletOverview({
+  balances,
+  isLoading = false,
+  demoCurrencies = [],
+}: CollectionWalletOverviewProps) {
   if (isLoading) {
     return <WalletGridSkeleton />;
   }
@@ -43,6 +48,11 @@ export default function CollectionWalletOverview({ balances, isLoading = false }
                 <span className={`currency-tag ${c.label} bg-transparent border-none font-semibold`}>
                   {w.currency}
                 </span>
+                {demoCurrencies.includes(w.currency) && (
+                  <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
+                    Demo
+                  </span>
+                )}
               </div>
               {hasPending && (
                 <div className="flex items-center gap-1 text-warning">

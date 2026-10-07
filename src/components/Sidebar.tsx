@@ -17,6 +17,8 @@ import {
   LogOut,
   WalletCards,
   UserCircle,
+  X,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface NavItem {
@@ -38,12 +40,40 @@ const NAV_ITEMS: NavItem[] = [
 
 interface SidebarProps {
   activeRoute: string;
+  platformName?: string;
+  isMobile?: boolean;
+  onClose?: () => void;
 }
 
-export default function Sidebar({ activeRoute }: SidebarProps) {
+export default function Sidebar({
+  activeRoute,
+  platformName = 'SwiftWallet',
+  isMobile = false,
+  onClose,
+}: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { signOut, user } = useAuth();
   const router = useRouter();
+
+  React.useEffect(() => {
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
+    let cancelled = false;
+    fetch('/api/admin/access', { cache: 'no-store' })
+      .then((response) => (response.ok ? response.json() : { isAdmin: false }))
+      .then((result: { isAdmin?: boolean }) => {
+        if (!cancelled) setIsAdmin(result.isAdmin === true);
+      })
+      .catch((error: unknown) => {
+        console.error('Unable to check administrator navigation access', error);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   async function handleSignOut() {
     try {
@@ -57,30 +87,46 @@ export default function Sidebar({ activeRoute }: SidebarProps) {
 
   return (
     <aside
-      className="relative flex flex-col h-screen bg-card border-r border-border transition-all duration-300 ease-in-out"
-      style={{ width: collapsed ? 64 : 240 }}
+      id={isMobile ? 'mobile-sidebar' : undefined}
+      role={isMobile ? 'dialog' : undefined}
+      aria-modal={isMobile ? true : undefined}
+      aria-label="Main navigation"
+      className={`${
+        isMobile ? 'fixed inset-y-0 left-0 z-50 w-72 shadow-2xl' : 'relative h-screen'
+      } flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out`}
+      style={{ width: isMobile ? 288 : collapsed ? 64 : 240 }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-border min-h-[72px]">
+      <div className="flex items-center justify-between gap-3 px-4 py-5 border-b border-border min-h-[72px]">
         <div className="flex items-center gap-2">
           <AppLogo size={32} />
-          {!collapsed && (
+          {(!collapsed || isMobile) && (
             <span className="font-bold text-foreground text-base tracking-tight whitespace-nowrap overflow-hidden">
-              SwiftWallet
+              {platformName}
             </span>
           )}
         </div>
+        {isMobile && (
+          <button
+            type="button"
+            aria-label="Close navigation menu"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            onClick={onClose}
+          >
+            <X size={18} />
+          </button>
+        )}
       </div>
 
       {/* User Badge */}
-      {!collapsed && (
+      {(!collapsed || isMobile) && (
         <div className="mx-3 mt-4 mb-2 p-3 rounded-xl bg-secondary border border-border">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center flex-shrink-0">
               <span className="text-xs font-bold text-primary">
                 {user?.user_metadata?.full_name
                   ? user.user_metadata.full_name.slice(0, 2).toUpperCase()
-                  : user?.email?.slice(0, 2).toUpperCase() ?? 'SW'}
+                  : (user?.email?.slice(0, 2).toUpperCase() ?? 'SW')}
               </span>
             </div>
             <div className="overflow-hidden">
@@ -112,11 +158,10 @@ export default function Sidebar({ activeRoute }: SidebarProps) {
               href={item.href}
               className={`sidebar-item ${isActive ? 'active' : ''} ${collapsed ? 'justify-center px-0' : ''}`}
               title={collapsed ? item.label : undefined}
+              onClick={onClose}
             >
               <span className="flex-shrink-0">{item.icon}</span>
-              {!collapsed && (
-                <span className="flex-1 truncate">{item.label}</span>
-              )}
+              {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
               {!collapsed && item.badge && (
                 <span className="ml-auto bg-warning text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                   {item.badge}
@@ -128,6 +173,24 @@ export default function Sidebar({ activeRoute }: SidebarProps) {
             </Link>
           );
         })}
+        {isAdmin && (
+          <>
+            {!collapsed && (
+              <p className="mt-5 px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+                Administration
+              </p>
+            )}
+            <Link
+              href="/admin"
+              className={`sidebar-item ${activeRoute === '/admin' ? 'active' : ''} ${collapsed ? 'justify-center px-0' : ''}`}
+              title={collapsed ? 'Admin Console' : undefined}
+              onClick={onClose}
+            >
+              <ShieldCheck size={18} />
+              {!collapsed && <span className="flex-1 truncate">Admin Console</span>}
+            </Link>
+          </>
+        )}
       </nav>
 
       {/* Bottom Actions */}
@@ -136,6 +199,7 @@ export default function Sidebar({ activeRoute }: SidebarProps) {
           href="#"
           className={`sidebar-item ${collapsed ? 'justify-center px-0' : ''}`}
           title={collapsed ? 'Notifications' : undefined}
+          onClick={onClose}
         >
           <Bell size={18} />
           {!collapsed && <span className="flex-1">Notifications</span>}
@@ -144,6 +208,7 @@ export default function Sidebar({ activeRoute }: SidebarProps) {
           href="#"
           className={`sidebar-item ${collapsed ? 'justify-center px-0' : ''}`}
           title={collapsed ? 'Settings' : undefined}
+          onClick={onClose}
         >
           <Settings size={18} />
           {!collapsed && <span className="flex-1">Settings</span>}
@@ -159,12 +224,16 @@ export default function Sidebar({ activeRoute }: SidebarProps) {
       </div>
 
       {/* Collapse Toggle */}
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-[88px] w-6 h-6 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors z-10"
-      >
-        {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
-      </button>
+      {!isMobile && (
+        <button
+          type="button"
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          onClick={() => setCollapsed(!collapsed)}
+          className="absolute -right-3 top-[88px] w-6 h-6 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors z-10"
+        >
+          {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
+        </button>
+      )}
     </aside>
   );
 }

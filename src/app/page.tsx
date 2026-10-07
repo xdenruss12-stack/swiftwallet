@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import AppLayout from '@/components/AppLayout';
 import CollectionWalletOverview from '@/components/CollectionWalletOverview';
 import ExchangeRateStrip from './components/ExchangeRateStrip';
@@ -8,23 +8,66 @@ import QuickActions from './components/QuickActions';
 import WalletFlowChartWrapper from './components/WalletFlowChartWrapper';
 import { WALLET_BALANCES } from '@/lib/mockData';
 import { RefreshCw } from 'lucide-react';
+import type { WalletBalance } from '@/lib/mockData';
+
+interface WalletSummary {
+  balance: number;
+  monthlyIn: number;
+  monthlyOut: number;
+  pendingIn: number;
+  pendingOut: number;
+  updatedAt: string;
+}
 
 export default function WalletOverviewPage() {
+  const [balances, setBalances] = useState<WalletBalance[] | null>(null);
+  const [balanceError, setBalanceError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState('');
 
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(t);
+  const loadWalletSummary = useCallback(async () => {
+    const response = await fetch('/api/wallet/summary', { cache: 'no-store' });
+    const result = (await response.json()) as WalletSummary | { error?: string };
+    if (!response.ok || !('balance' in result)) {
+      throw new Error('Unable to load your PHP wallet balance.');
+    }
+
+    const phpBalance: WalletBalance = {
+      currency: 'PHP',
+      balance: result.balance,
+      monthlyIn: result.monthlyIn,
+      monthlyOut: result.monthlyOut,
+      pendingIn: result.pendingIn,
+      pendingOut: result.pendingOut,
+    };
+    setBalances([
+      phpBalance,
+      ...WALLET_BALANCES.filter((balance) => balance.currency !== 'PHP'),
+    ]);
+    setLastUpdated(result.updatedAt);
+    setBalanceError('');
   }, []);
 
-  function handleRefresh() {
+  useEffect(() => {
+    loadWalletSummary()
+      .catch((error: unknown) => {
+        setBalanceError(error instanceof Error ? error.message : 'Unable to load wallet balance.');
+      })
+      .finally(() => setIsLoading(false));
+  }, [loadWalletSummary]);
+
+  async function handleRefresh() {
     setIsRefreshing(true);
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      await loadWalletSummary();
+    } catch (error) {
+      setBalanceError(error instanceof Error ? error.message : 'Unable to load wallet balance.');
+    } finally {
       setIsLoading(false);
       setIsRefreshing(false);
-    }, 800);
+    }
   }
 
   return (
@@ -34,7 +77,9 @@ export default function WalletOverviewPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-foreground">Wallet Overview</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Last updated: Oct 06, 2026 at 21:11 UTC</p>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {lastUpdated ? `PHP balance checked ${new Date(lastUpdated).toLocaleString()}` : 'PHP balance from confirmed Swiftpay deposits'}
+            </p>
           </div>
           <button
             onClick={handleRefresh}
@@ -50,7 +95,26 @@ export default function WalletOverviewPage() {
         <ExchangeRateStrip />
 
         {/* Currency Balance Cards */}
-        <CollectionWalletOverview balances={WALLET_BALANCES} isLoading={isLoading} />
+        {balanceError ? (
+          <div className="card-surface flex items-center justify-between gap-4 p-4" role="alert">
+            <p className="text-sm text-danger">{balanceError}</p>
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="shrink-0 rounded-lg bg-secondary px-3 py-2 text-sm text-foreground disabled:opacity-60"
+            >
+              Retry
+            </button>
+          </div>
+        ) : balances ? (
+          <CollectionWalletOverview
+            balances={balances}
+            isLoading={isLoading}
+            demoCurrencies={['KRW', 'USDT']}
+          />
+        ) : (
+          <CollectionWalletOverview balances={[]} isLoading={isLoading} />
+        )}
 
         {/* Quick Actions */}
         <div className="card-surface p-4">

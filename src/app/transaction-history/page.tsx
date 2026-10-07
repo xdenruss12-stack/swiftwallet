@@ -60,7 +60,9 @@ export default function TransactionHistoryPage() {
         {/* Header */}
         <div>
           <h1 className="text-xl font-semibold text-foreground">Transaction History</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">All wallet activity across PHP, KRW, and USDT</p>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Sample activity across PHP, KRW, and USDT. Swiftpay payment status is shown after checkout.
+          </p>
         </div>
 
         {/* Status Summary */}

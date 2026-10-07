@@ -11,7 +11,7 @@ export default function UsdtTransactionList() {
     <div className="card-surface">
       <div className="px-5 py-4 border-b border-border">
         <h3 className="text-sm font-semibold text-foreground">USDT Transaction History</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">{usdtTxs?.length} transactions</p>
+        <p className="text-xs text-warning mt-0.5">Sample data · {usdtTxs?.length} transactions</p>
       </div>
       <div className="divide-y divide-border">
         {usdtTxs?.map((tx) => (
